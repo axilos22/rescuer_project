@@ -8,6 +8,16 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  rqt_gui
+  rqt_gui_py
+)
+
+# AX settings
+set(gui_SRC_FILE 
+	#~ src/gui.cpp
+)
+set(gui_HEADER_FILE
+	#~ src/gui.h
 )
 
 ## System dependencies are found with CMake's conventions
@@ -129,15 +139,18 @@ include_directories(
 
 ## Declare a C++ executable
 # add_executable(rescuer_project_node src/rescuer_project_node.cpp)
+#~ add_executable(gui ${gui_SRC_FILE})
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(rescuer_project_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#~ add_dependencies(gui ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(rescuer_project_node
 #   ${catkin_LIBRARIES}
 # )
+#~ target_link_libraries(gui ${catkin_LIBRARIES})
 
 #############
 ## Install ##
