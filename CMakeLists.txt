@@ -20,7 +20,7 @@ include(${QT_USE_FILE})
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
+catkin_python_setup()
 roslint_cpp()
 
 ################################################
@@ -40,10 +40,10 @@ catkin_package(
 )
 
 #Ax: my file listing
-set(gui_cpp_SRCS 
+set(rescuer_project_SRCS 
   src/rescuer_project/main_window.cpp
 )
-set(gui_cpp_HDRS
+set(rescuer_project_HDRS
   include/rescuer_project/main_window.h
 )
 
@@ -59,8 +59,8 @@ include_directories(
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
-  ${gui_cpp_SRCS}
-  ${gui_cpp_MOCS}
+  ${rescuer_project_SRCS}
+  ${rescuer_project_MOCS}
 )
 
 ## Specify libraries to link a library or executable target against
