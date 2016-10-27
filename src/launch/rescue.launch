@@ -1,0 +1,4 @@
+<launch>
+  <node name="gui_node" pkg="rescuer_project" type="MyWindow">
+  </node>
+</launch>

@@ -1,0 +1,20 @@
+<library path="rescuer_project/rqt_gui">
+  <class name="rescuer_project/MyWindow" type="rescuer_project::MyWindow" base_class_type="rqt_gui_cpp::Plugin">
+    <description>
+      The GUI of the rescuer project
+    </description>
+    <qtgui>
+      <!-- optional grouping...
+      <group>
+        <label>Group</label>
+      </group>
+      <group>
+        <label>Subgroup</label>
+      </group>
+      -->
+      <label>Main window</label>
+      <icon type="theme">system-help</icon>
+      <statustip>Great user interface to provide real value.</statustip>
+    </qtgui>
+  </class>
+</library>
