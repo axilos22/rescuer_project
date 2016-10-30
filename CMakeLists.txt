@@ -47,7 +47,7 @@ set(rescuer_project_HDRS
   include/rescuer_project/main_window.h
 )
 
-qt4_wrap_cpp(gui_cpp_MOCS ${gui_cpp_HDRS})
+qt4_wrap_cpp(rescuer_project_MOCS ${gui_cpp_HDRS})
 ###########
 ## Build ##
 ###########

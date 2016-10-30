@@ -10,6 +10,7 @@ namespace rescuer_project {
 
 class Rescuer_gui
         : public rqt_gui_cpp::Plugin {
+//    uncommenting Q_OBJECT generate errors
 //    Q_OBJECT
 public:
     Rescuer_gui();
