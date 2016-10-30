@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>rescuer_project</name>
-  <version>0.0.0</version>
-  <description>The rescuer_project package</description>
+<name>rescuer_project</name>
+<version>0.0.0</version>
+<description>The rescuer_project package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
@@ -55,7 +55,7 @@
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
-    <!-- Other tools can request additional information be placed here -->
+  <!-- Other tools can request additional information be placed here -->
     <rqt_gui plugin="${prefix}/plugin.xml"/>
   </export>
-</package>
+  </package>

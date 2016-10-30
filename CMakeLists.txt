@@ -35,7 +35,7 @@ roslint_cpp()
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  LIBRARIES rqt_gui
+  LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS roscpp rospy rqt_gui_cpp std_msgs
 )
 
