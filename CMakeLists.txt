@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   rqt_gui
   rqt_gui_cpp
   std_msgs
+  ardrone_autonomy
 )
 
 ## System dependencies are found with CMake's conventions
