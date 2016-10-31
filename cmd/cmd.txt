@@ -1,4 +1,4 @@
-roslaunch drone_application launch_drone.launch
+roslaunch rescuer_project launch_drone.launch 
 
 To takeoff:
 

@@ -26,7 +26,7 @@ def land():
 def turnAround():
 	#~ geometryMsg=[[0,0,0],[0,0,1.0]]
 	t = Twist()
-	t.angular.z=.9
+	t.angular.z=.4
 	loop=0
 	pub = rospy.Publisher("/cmd_vel",Twist, queue_size=10 )
 	while not rospy.is_shutdown() and loop<5:
