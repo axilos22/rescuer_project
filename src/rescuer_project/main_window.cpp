@@ -40,5 +40,4 @@ void Rescuer_gui::restoreSettings(const qt_gui_cpp::Settings& plugin_settings, c
     // v = instance_settings.value(k)
 }
 } // namespace
-PLUGINLIB_DECLARE_CLASS(rescuer_project, Rescuer_gui, rescuer_project::Rescuer_gui, rqt_gui_cpp::Plugin)
-//PLUGINLIB_EXPORT_CLASS(rescuer_project::Rescuer_gui,rqt_gui_cpp::Plugin)
+PLUGINLIB_EXPORT_CLASS(rescuer_project::Rescuer_gui,rqt_gui_cpp::Plugin)
