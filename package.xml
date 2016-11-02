@@ -40,24 +40,34 @@
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>ardrone_autonomy</build_depend>
+  <!--gui-->
+  <build_depend>cv_bridge</build_depend>
+  <run_depend>cv_bridge</run_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <build_depend>image_transport</build_depend>
+  <run_depend>image_transport</run_depend>
   <build_depend>roscpp</build_depend>
-  <build_depend>rospy</build_depend>
-  <build_depend>roslint</build_depend>
-  <build_depend>rqt_gui</build_depend>
-  <build_depend>rqt_gui_cpp</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <run_depend>ardrone_autonomy</run_depend>
   <run_depend>roscpp</run_depend>
+  <build_depend>rospy</build_depend>
   <run_depend>rospy</run_depend>
+  <build_depend>roslint</build_depend>
+  <run_depend>roslint</run_depend>
+  <build_depend>rqt_gui</build_depend>
   <run_depend>rqt_gui</run_depend>
+  <build_depend>rqt_gui_cpp</build_depend>
   <run_depend>rqt_gui_cpp</run_depend>
+  <build_depend>std_msgs</build_depend>
   <run_depend>std_msgs</run_depend>
-
+  <build_depend>sensor_msgs</build_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <!--drone-->
+  <build_depend>ardrone_autonomy</build_depend>
+  <run_depend>ardrone_autonomy</run_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
   <!-- Other tools can request additional information be placed here -->
-    <rqt_gui plugin="${prefix}/plugin.xml"/>
+  <rqt_gui plugin="${prefix}/plugin.xml"/>
   </export>
   </package>
