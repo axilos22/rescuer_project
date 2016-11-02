@@ -15,10 +15,16 @@ void Rescuer_gui::initPlugin(qt_gui_cpp::PluginContext& context)
     // access standalone command line arguments
     QStringList argv = context.argv();
     // create QWidget
-    widget_ = new QWidget();
-    _button = new QPushButton("PRESS ME",widget_);
-    // extend the widget with all attributes and children from UI file
-    //~ ui_.setupUi(widget_);
+    widget_ = new QWidget;
+    _button = new QPushButton("PRESS ME");
+    _hLayout = new QHBoxLayout;
+    _rWidget= new RescuerWidget;
+    _rWidget->initWidget();
+
+    widget_->setLayout(_hLayout);
+    _hLayout->addWidget(_rWidget);
+    _hLayout->addWidget(_button);
+
     // add widget to the user interface
     context.addWidget(widget_);
 }

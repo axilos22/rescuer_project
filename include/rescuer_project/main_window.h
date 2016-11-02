@@ -1,10 +1,16 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
+/*RQT*/
 #include <rqt_gui_cpp/plugin.h>
-
+#include <ui_image_view.h>
+#include <image_transport/image_transport.h>
+#include <ros/macros.h>
+/*QT*/
 #include <QWidget>
 #include <QPushButton>
+#include <QHBoxLayout>
+/*own*/
+#include "rescuer_project/rescuer_widget.h"
 
 namespace rescuer_project {
 
@@ -21,6 +27,8 @@ public:
 private:
     QWidget* widget_;
     QPushButton *_button;
+    QHBoxLayout *_hLayout;
+    RescuerWidget *_rWidget;
 };
 }//namespace
 #endif // MAINWINDOW_H
