@@ -1,5 +1,5 @@
 <library path="lib/librescuer_project">
-  <class name="rescuerGUI" type="rescuer_project::Rescuer_gui" base_class_type="rqt_gui_cpp::Plugin">
+  <class name="rescuer_project/gui" type="rescuer_project::MainWindow" base_class_type="rqt_gui_cpp::Plugin">
     <description>
       The GUI of the rescuer project
     </description>
