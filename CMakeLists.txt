@@ -67,7 +67,7 @@ set(rescuer_project_HDRS
   include/rescuer_project/rescuer_widget.h
 )
 set(rescuer_project_UIS
-  src/rescuer_project/image_view.ui
+  src/rescuer_project/main_window.ui
 )
 
 if("${qt_gui_cpp_USE_QT_MAJOR_VERSION} " STREQUAL "5 ")
@@ -78,8 +78,7 @@ endif()
 # ensure generated header files are being created in the devel space
 set(_cmake_current_binary_dir "${CMAKE_CURRENT_BINARY_DIR}")
 set(CMAKE_CURRENT_BINARY_DIR "${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}")
-#random ui files added so that rqt lib generate required files
-#do not compiles if no *ui files provided
+
 if("${qt_gui_cpp_USE_QT_MAJOR_VERSION} " STREQUAL "5 ")
   qt5_wrap_ui(rescuer_project_UIS_H ${rescuer_project_UIS})
 else()
