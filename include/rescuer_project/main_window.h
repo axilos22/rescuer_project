@@ -6,13 +6,19 @@
 /*ROS*/
 #include <ros/ros.h>
 #include <ros/macros.h>
+#include <image_transport/image_transport.h>
+#include <float.h>
+/*ROS-msg*/
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
-#include <image_transport/image_transport.h>
+#include <std_msgs/Float32.h>
 /*QT*/
 #include <QTextEdit>
 #include <QString>
 #include <QWidget>
+#include <QVector>
+/*AR Drone*/
+#include <ardrone_autonomy/Navdata.h>
 /*own*/
 #include <ui_main_window.h>
 #include <rescuer_project/rescuer_widget.h>
@@ -20,7 +26,6 @@
 namespace rescuer_project {
 
 class MainWindow : public rqt_gui_cpp::Plugin {
-    // FIXME Undefined symbol
     Q_OBJECT
 public:
     MainWindow();
@@ -32,11 +37,16 @@ public:
 public slots:
     void droneTakeOff();
     void droneLand();
+    void connectWithDrone();
 protected:
     QWidget* _centralWidget;
     Ui::MainWindowWidget _ui;
     ros::NodeHandle* _nh;
+    ros::Rate* _rate;
     QTextEdit *_console;
+
+    int sendEmptyCommand(QString commandTopic);
+    void navDataCallback(const ardrone_autonomy::Navdata& navData);
 };
 }//namespace
 #endif // MAINWINDOW_H

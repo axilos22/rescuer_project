@@ -4,7 +4,7 @@
 namespace rescuer_project {
 
 MainWindow::MainWindow():rqt_gui_cpp::Plugin(),_centralWidget(0) {
-    setObjectName("MainWindow0");
+    setObjectName("rescuer_gui");
 }
 
 void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
@@ -19,12 +19,12 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     // add widget to the user interface
     context.addWidget(_centralWidget);
     //TODO check if rosnode is set
-    //init rosnode and send nodeHandle object
-    ros::NodeHandle nh;
-    _nh = &nh;
+    //init rosnode and map nodeHandle object
+    _nh = new ros::NodeHandle;
+    _rate = new ros::Rate(30); //30ms rate
     //connect GUI
-    connect(_ui.droneTakeOffButton,SIGNAL(released()),this,SLOT(droneTakeOff()));
-    connect(_ui.droneLandButton,SIGNAL(released()),this,SLOT(droneLand()));
+    connect(_ui.droneTakeOffButton,SIGNAL(pressed()),this,SLOT(droneTakeOff()));
+    connect(_ui.droneLandButton,SIGNAL(pressed()),this,SLOT(droneLand()));
 }
 
 void MainWindow::shutdownPlugin()
@@ -52,20 +52,46 @@ void MainWindow::log(QString msg)
 
 void MainWindow::droneTakeOff()
 {
-    ROS_INFO("Drone has to take off now.");
-    log("Drone has to take off now.");
-    std_msgs::Empty emptyMsg;
-    ros::Publisher droneTakeOffPub = (*_nh).advertise<std_msgs::Empty>("/ardrone/takeoff",1);
-    droneTakeOffPub.publish(emptyMsg);
+    ROS_DEBUG("Drone has to take off now.");
+    log("Drone taking off.");
+    sendEmptyCommand("/ardrone/takeoff");
 }
 
 void MainWindow::droneLand()
 {
-    ROS_INFO("Drone has to land now.");
-    log("Drone has to land now.");
+    ROS_DEBUG("Drone has to land now.");
+    log("Drone landing");
+    sendEmptyCommand("ardrone/land");
+}
+
+void MainWindow::connectWithDrone()
+{
+//    (*_nh).subscribe("/ardrone/navdata",2,this->navDataCallback);
+    (*_nh).subscribe("ardrone/navdata",1,&MainWindow::navDataCallback,this);
+}
+
+int MainWindow::sendEmptyCommand(QString commandTopic)
+{
     std_msgs::Empty emptyMsg;
-    ros::Publisher droneLandPub = (*_nh).advertise<std_msgs::Empty>("/ardrone/land",1);
-    droneLandPub.publish(emptyMsg);
+    ros::Publisher droneTakeOffPub = (*_nh).advertise<std_msgs::Empty>(commandTopic.toStdString(),1);
+    for(int loop=0;loop<5;loop++) {
+        if(!ros::ok())
+            break;
+        droneTakeOffPub.publish(emptyMsg);
+        log("loop");
+        ros::spinOnce();
+        _rate->sleep();
+    }
+}
+
+void MainWindow::navDataCallback(const ardrone_autonomy::Navdata &navData)
+{
+    QVector<float> rot;
+    rot<<navData.rotX<<navData.rotY <<navData.rotZ;
+    QString displayed = "["+QString::number(rot.at(1))+";"+QString::number(rot.at(2))+";"+QString::number(rot.at(3))+"]";
+    QLineEdit* rotLe = _ui.rotXYZLineEdit;
+    rotLe->clear();
+    rotLe->insert(displayed);
 }
 } // namespace
 PLUGINLIB_EXPORT_CLASS(rescuer_project::MainWindow,rqt_gui_cpp::Plugin)

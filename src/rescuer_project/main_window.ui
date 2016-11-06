@@ -183,28 +183,14 @@
      <item>
       <layout class="QVBoxLayout" name="droneLayout">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QFrame" name="droneBottomCam">
-           <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QFrame" name="droneFrontCam">
-           <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
-           </property>
-           <property name="frameShadow">
-            <enum>QFrame::Raised</enum>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QFrame" name="droneFrontCam">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QGroupBox" name="droneStatus">
@@ -213,66 +199,29 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
+           <widget class="QProgressBar" name="batteryProgressBar">
+            <property name="toolTip">
+             <string>Drone battery level</string>
+            </property>
+            <property name="value">
+             <number>24</number>
+            </property>
+           </widget>
+          </item>
+          <item>
            <layout class="QFormLayout" name="formLayout">
+            <property name="fieldGrowthPolicy">
+             <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+            </property>
             <item row="0" column="0">
-             <widget class="QLabel" name="xLabel_2">
+             <widget class="QLabel" name="rotXYZLabel">
               <property name="text">
-               <string>x=</string>
+               <string>Rot[x,y,z]</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QDoubleSpinBox" name="xDoubleSpinBox_2"/>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="yLabel_2">
-              <property name="text">
-               <string>y=</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QDoubleSpinBox" name="yDoubleSpinBox_2"/>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="zLabel_2">
-              <property name="text">
-               <string>z=</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QDoubleSpinBox" name="zDoubleSpinBox_2"/>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="rollLabel">
-              <property name="text">
-               <string>roll</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QDoubleSpinBox" name="rollDoubleSpinBox"/>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="pitchLabel">
-              <property name="text">
-               <string>pitch</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QDoubleSpinBox" name="pitchDoubleSpinBox"/>
-            </item>
-            <item row="5" column="0">
-             <widget class="QLabel" name="yawLabel">
-              <property name="text">
-               <string>yaw</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1">
-             <widget class="QDoubleSpinBox" name="yawDoubleSpinBox"/>
+             <widget class="QLineEdit" name="rotXYZLineEdit"/>
             </item>
            </layout>
           </item>
@@ -281,6 +230,13 @@
        </item>
        <item>
         <layout class="QGridLayout" name="droneCmdGridLayout">
+         <item row="0" column="1">
+          <widget class="QPushButton" name="droneLandButton">
+           <property name="text">
+            <string>Land</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QPushButton" name="droneTakeOffButton">
            <property name="text">
@@ -288,10 +244,10 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QPushButton" name="droneLandButton">
+         <item row="1" column="0">
+          <widget class="QPushButton" name="connectButton">
            <property name="text">
-            <string>Land</string>
+            <string>Connect</string>
            </property>
           </widget>
          </item>
