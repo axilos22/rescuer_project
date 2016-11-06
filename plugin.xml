@@ -4,6 +4,11 @@
       The GUI of the rescuer project
     </description>
     <qtgui>
+        <group>
+            <label>Rescuer</label>
+            <icon type="theme">folder</icon>
+            <statustip>Plugins related to rescuer.</statustip>
+        </group>
       <label>GUI for rescuer</label>
       <icon type="theme">system-help</icon>
       <statustip>GUI for the rescuer project</statustip>
