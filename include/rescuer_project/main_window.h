@@ -1,29 +1,27 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+/*RQT*/
+#include <rqt_gui_cpp/plugin.h>
+#include <ui_image_view.h>
 /*ROS*/
 #include <ros/ros.h>
 #include <ros/macros.h>
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
 #include <image_transport/image_transport.h>
-/*RQT*/
-#include <rqt_gui_cpp/plugin.h>
-//#include <ui_image_view.h>
 /*QT*/
-#include <QWidget>
-#include <QPushButton>
-#include <QHBoxLayout>
 #include <QTextEdit>
 #include <QString>
+#include <QWidget>
 /*own*/
 #include <ui_main_window.h>
-#include "rescuer_project/rescuer_widget.h"
+#include <rescuer_project/rescuer_widget.h>
 
 namespace rescuer_project {
 
 class MainWindow : public rqt_gui_cpp::Plugin {
-    //again Q_OBJECT add errors after few makes
-//    Q_OBJECT
+    // FIXME Undefined symbol
+    Q_OBJECT
 public:
     MainWindow();
     virtual void initPlugin(qt_gui_cpp::PluginContext& context);

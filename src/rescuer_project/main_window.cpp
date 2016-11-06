@@ -1,7 +1,6 @@
 #include "rescuer_project/main_window.h"
 #include <pluginlib/class_list_macros.h>
 #include <QStringList>
-
 namespace rescuer_project {
 
 MainWindow::MainWindow():rqt_gui_cpp::Plugin(),_centralWidget(0) {
