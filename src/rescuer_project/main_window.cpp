@@ -40,8 +40,8 @@ void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
 void MainWindow::cameraCallback(const sensor_msgs::ImageConstPtr &msg)
 {
     try {
-        cv::imshow("view",cv_bridge::toCvShare(msg,"bgr8")->image);
-        cv::waitKey(30);
+		cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::RGB8);
+		_conversionMat = cv_ptr->image;
     }
     catch(cv_bridge::Exception e) {
         Q_UNUSED(e);
