@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   ardrone_autonomy
 )
+find_package(OpenCV REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 if("${qt_gui_cpp_USE_QT_MAJOR_VERSION} " STREQUAL "5 ")
@@ -94,6 +95,7 @@ include_directories(
   ${rescuer_project_INCLUDE_DIRECTORIES}
   ${CMAKE_CURRENT_BINARY_DIR}/..
   ${catkin_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
