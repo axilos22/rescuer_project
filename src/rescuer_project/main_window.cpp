@@ -34,7 +34,19 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
-	ROS_INFO("I heard: [%s]", msg->data.c_str());
+    ROS_INFO("I heard: [%s]", msg->data.c_str());
+}
+
+void MainWindow::cameraCallback(const sensor_msgs::ImageConstPtr &msg)
+{
+    try {
+        cv::imshow("view",cv_bridge::toCvShare(msg,"bgr8")->image);
+        cv::waitKey(30);
+    }
+    catch(cv_bridge::Exception e) {
+        Q_UNUSED(e);
+        ROS_ERROR("Could not convert from %s to bgr8.",msg->encoding.c_str());
+    }
 }
 
 void MainWindow::shutdownPlugin()
@@ -101,6 +113,8 @@ void MainWindow::connectWithDrone()
     ROS_DEBUG("Subbed to navdata");
     ros::Subscriber testSub = (*_nh).subscribe("/test",1,&MainWindow::testCallback,this);
     ROS_DEBUG("Subbed to test sub");
+    _it = new image_transport::ImageTransport((*_nh));
+    (*_itSub) = _it->subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this);
     _subs.append(droneNavDataSub);
     _subs.append(testSub);
     log("Drone connected.");
