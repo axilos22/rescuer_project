@@ -38,8 +38,10 @@ public slots:
     void droneTakeOff();
     void droneLand();
     void connectWithDrone();
+    void updateRotValues(QVector<float> rotV);
 signals:
-    void batteryChanged(int percent);
+    void batteryUpdated(int percent);
+    void rotDataUpdated(QVector<float>);
 protected:
     QWidget* _centralWidget;
     Ui::MainWindowWidget _ui;
@@ -47,7 +49,7 @@ protected:
     ros::Rate* _rate;
     QTextEdit *_console;
     QVector<ros::Subscriber> _subs;
-    ros::Subscriber _droneNavDataSub;
+    ros::Subscriber _droneNavDataSub, _testSub;
     QVector<ros::Publisher> _pubs;
 
     int sendEmptyCommand(QString commandTopic);

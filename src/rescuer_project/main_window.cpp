@@ -23,16 +23,18 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     //~ _nh = new ros::NodeHandle;
     _nh = &(getNodeHandle());
     _rate = new ros::Rate(30); //30ms rate
+    //Adding custom types for ROS data transmission
+    qRegisterMetaType<QVector<float> >("QVector<float>");
     //connect GUI
     connect(_ui.droneTakeOffButton,SIGNAL(pressed()),this,SLOT(droneTakeOff()));
     connect(_ui.droneLandButton,SIGNAL(pressed()),this,SLOT(droneLand()));
     connect(_ui.connectButton,SIGNAL(pressed()),this,SLOT(connectWithDrone()));
-    connect(this,SIGNAL(batteryChanged(int)),_ui.batteryProgressBar,SLOT(setValue(int)));
+    connect(this,SIGNAL(batteryUpdated(int)),_ui.batteryProgressBar,SLOT(setValue(int)));
+    connect(this,SIGNAL(rotDataUpdated(QVector<float>)),this,SLOT(updateRotValues(QVector<float>)));
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
 	ROS_INFO("I heard: [%s]", msg->data.c_str());
-	log("new msg");
 }
 
 void MainWindow::shutdownPlugin()
@@ -78,15 +80,6 @@ void MainWindow::droneLand()
     sendEmptyCommand("/ardrone/land");
 }
 
-void MainWindow::connectWithDrone()
-{
-    _droneNavDataSub = (*_nh).subscribe("/ardrone/navdata",1,&MainWindow::navDataCallback,this);
-    //~ _subs.append(droneNavDataSub);
-    ros::Subscriber testSub = (*_nh).subscribe("/test",1,&MainWindow::testCallback,this);
-    //~ _subs.append(testSub);
-    log("subbed into drone");
-}
-
 int MainWindow::sendEmptyCommand(QString commandTopic)
 {
     std_msgs::Empty emptyMsg;
@@ -101,19 +94,36 @@ int MainWindow::sendEmptyCommand(QString commandTopic)
     }
 }
 
+void MainWindow::connectWithDrone()
+{
+    ROS_DEBUG("@connect with drone");
+    ros::Subscriber droneNavDataSub = (*_nh).subscribe("/ardrone/navdata",1,&MainWindow::navDataCallback,this);
+    ROS_DEBUG("Subbed to navdata");
+    ros::Subscriber testSub = (*_nh).subscribe("/test",1,&MainWindow::testCallback,this);
+    ROS_DEBUG("Subbed to test sub");
+    _subs.append(droneNavDataSub);
+    _subs.append(testSub);
+    log("Drone connected.");
+}
+
+void MainWindow::updateRotValues(QVector<float> rotV)
+{
+    QString displayed = "["+QString::number(rotV.at(0))+","+QString::number(rotV.at(1))+","+QString::number(rotV.at(2))+"]";
+    QLineEdit* rotLe = _ui.rotXYZLineEdit;
+    rotLe->clear();
+    rotLe->setText(displayed);
+}
+/**
+ * @brief MainWindow::navDataCallback
+ * @param navData
+ * Note: this is a ROS callbacl: not possible to access Qt objects.
+ */
 void MainWindow::navDataCallback(const ardrone_autonomy::Navdata &navData)
 {
-	int bat =(int) navData.batteryPercent;
-	emit batteryChanged(bat);
-	log("Updated battery");
-    //~ QVector<float> rot;
-    //~ rot<<navData.rotX<<navData.rotY <<navData.rotZ;
-    //~ QString displayed = "["+QString::number(rot.at(1))+";"+QString::number(rot.at(2))+";"+QString::number(rot.at(3))+"]";
-    //~ QLineEdit* rotLe = _ui.rotXYZLineEdit;
-    //~ rotLe->clear();
-    //~ rotLe->insert(displayed);
-    //~ _ui.batteryProgressBar->setValue(navData.batteryPercent);
-    //~ log("update Navdata");
+    emit batteryUpdated((int)navData.batteryPercent);
+    QVector<float> rot;
+    rot<<navData.rotX<<navData.rotY <<navData.rotZ;
+    emit rotDataUpdated(rot);
 }
 } // namespace
 PLUGINLIB_EXPORT_CLASS(rescuer_project::MainWindow,rqt_gui_cpp::Plugin)
