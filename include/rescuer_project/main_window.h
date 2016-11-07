@@ -43,6 +43,7 @@ public slots:
 signals:
     void batteryUpdated(int percent);
     void rotDataUpdated(QVector<float>);
+    void camImgUpdated(QPixmap);
 protected:
     QWidget* _centralWidget;
     Ui::MainWindowWidget _ui;
@@ -52,7 +53,7 @@ protected:
     QVector<ros::Subscriber> _subs;
     ros::Subscriber _droneNavDataSub, _testSub;
     QVector<ros::Publisher> _pubs;
-    cv::mat _conversionMat;
+    cv::Mat _conversionMat;
     //cam
     image_transport::ImageTransport* _it;
     image_transport::Subscriber *_itSub;
