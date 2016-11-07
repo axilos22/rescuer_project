@@ -31,7 +31,7 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(_ui.connectButton,SIGNAL(pressed()),this,SLOT(connectWithDrone()));
     connect(this,SIGNAL(batteryUpdated(int)),_ui.batteryProgressBar,SLOT(setValue(int)));
     connect(this,SIGNAL(rotDataUpdated(QVector<float>)),this,SLOT(updateRotValues(QVector<float>)));
-    connect(this,SIGNAL(camImgUpdated(QImage)),_ui.droneCamLabel,SLOT(setPixmap(QPixmap)));
+    //~ connect(this,SIGNAL(camImgUpdated(QPixmap)),_ui.droneCamLabel,SLOT(setPixmap(QPixmap)));
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
@@ -40,21 +40,27 @@ void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
 
 void MainWindow::cameraCallback(const sensor_msgs::ImageConstPtr &msg)
 {
-    try {
-		cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::RGB8);
-		_conversionMat = cv_ptr->image;
-        QImage img(_conversionMat.data,_conversionMat.cols,_conversionMat.rows,_conversionMat.step[0],QImage::Format_RGB888);
-        QPixmap pix;
-        if(pix.convertFromImage(img)) {
-            emit camImgUpdated(pix);
-        } else {
-            ROS_ERROR("Failed converting QImage into QPixmap");
-        }
-    }
-    catch(cv_bridge::Exception e) {
-        Q_UNUSED(e);
-        ROS_ERROR("Could not convert from %s to bgr8.",msg->encoding.c_str());
-    }
+	ROS_INFO("Camera callback");
+	//~ try {
+		//~ cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::RGB8);
+	//~ }
+	//~ catch(cv_bridge::Exception e) {
+        //~ ROS_ERROR("Could not convert from %s to bgr8.",msg->encoding.c_str());
+    //~ }
+    //~ try {
+		//~ cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::RGB8);
+		//~ _conversionMat = cv_ptr->image;
+		//~ ROS_INFO("Converted to cv:Mat");
+        //~ QImage img(_conversionMat.data,_conversionMat.cols,_conversionMat.rows,_conversionMat.step[0],QImage::Format_RGB888);
+        //~ QPixmap pix;
+        //~ ROS_INFO("Now put QImage into QPixmap");
+        //~ if(pix.convertFromImage(img)) {
+            //~ emit camImgUpdated(pix);
+        //~ } else {
+            //~ ROS_ERROR("Failed converting QImage into QPixmap");
+        //~ }
+    //~ }
+
 }
 
 void MainWindow::shutdownPlugin()
@@ -123,9 +129,11 @@ void MainWindow::connectWithDrone()
     ROS_DEBUG("Subbed to test sub");
     _it = new image_transport::ImageTransport((*_nh));
     (*_itSub) = _it->subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this);
+    ROS_INFO("Subbed to the camera");
     _subs.append(droneNavDataSub);
     _subs.append(testSub);
     log("Drone connected.");
+    ROS_INFO("-- all subs Ok");
 }
 
 void MainWindow::updateRotValues(QVector<float> rotV)
