@@ -31,36 +31,10 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(_ui.connectButton,SIGNAL(pressed()),this,SLOT(connectWithDrone()));
     connect(this,SIGNAL(batteryUpdated(int)),_ui.batteryProgressBar,SLOT(setValue(int)));
     connect(this,SIGNAL(rotDataUpdated(QVector<float>)),this,SLOT(updateRotValues(QVector<float>)));
-    //~ connect(this,SIGNAL(camImgUpdated(QPixmap)),_ui.droneCamLabel,SLOT(setPixmap(QPixmap)));
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
     ROS_INFO("I heard: [%s]", msg->data.c_str());
-}
-
-void MainWindow::cameraCallback(const sensor_msgs::ImageConstPtr &msg)
-{
-	ROS_INFO("Camera callback");
-	//~ try {
-		//~ cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::RGB8);
-	//~ }
-	//~ catch(cv_bridge::Exception e) {
-        //~ ROS_ERROR("Could not convert from %s to bgr8.",msg->encoding.c_str());
-    //~ }
-    //~ try {
-		//~ cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::RGB8);
-		//~ _conversionMat = cv_ptr->image;
-		//~ ROS_INFO("Converted to cv:Mat");
-        //~ QImage img(_conversionMat.data,_conversionMat.cols,_conversionMat.rows,_conversionMat.step[0],QImage::Format_RGB888);
-        //~ QPixmap pix;
-        //~ ROS_INFO("Now put QImage into QPixmap");
-        //~ if(pix.convertFromImage(img)) {
-            //~ emit camImgUpdated(pix);
-        //~ } else {
-            //~ ROS_ERROR("Failed converting QImage into QPixmap");
-        //~ }
-    //~ }
-
 }
 
 void MainWindow::shutdownPlugin()
@@ -130,13 +104,6 @@ void MainWindow::connectWithDrone()
     ROS_DEBUG("Subbed to test sub");
     _subs.append(droneNavDataSub);
     _subs.append(testSub);
-//    _it = new image_transport::ImageTransport(nh);
-//    _itSub = new image_transport::Subscriber(_it->subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this));
-//    image_transport::ImageTransport it = image_transport::ImageTransport(nh);
-//    image_transport::Subscriber sub = it.subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this);
-//    _it = &it;
-//    _itSub = &sub;
-//    ROS_INFO("Subbed to the camera");
     log("Drone connected.");
     ROS_INFO("-- all subs Ok");
 }
@@ -151,7 +118,7 @@ void MainWindow::updateRotValues(QVector<float> rotV)
 /**
  * @brief MainWindow::navDataCallback
  * @param navData
- * Note: this is a ROS callbacl: not possible to access Qt objects.
+ * Note: this is a ROS callback: not possible to access Qt objects.
  */
 void MainWindow::navDataCallback(const ardrone_autonomy::Navdata &navData)
 {

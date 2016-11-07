@@ -1,13 +1,14 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+/*CPP*/
+#include <float.h>
 /*RQT*/
 #include <rqt_gui_cpp/plugin.h>
 /*ROS*/
 #include <ros/ros.h>
 #include <ros/macros.h>
-#include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
-#include <float.h>
+#include <image_transport/image_transport.h>
 /*ROS-msg*/
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
@@ -57,15 +58,10 @@ protected:
     QVector<ros::Subscriber> _subs;
     ros::Subscriber _droneNavDataSub, _testSub;
     QVector<ros::Publisher> _pubs;
-    cv::Mat _conversionMat;
-    //cam
-    image_transport::ImageTransport* _it;
-    image_transport::Subscriber* _itSub;
 
     int sendEmptyCommand(QString commandTopic);
     void navDataCallback(const ardrone_autonomy::Navdata& navData);
     void testCallback(const std_msgs::String::ConstPtr& msg);
-    void cameraCallback(const sensor_msgs::ImageConstPtr& msg);
 };
 }//namespace
 #endif // MAINWINDOW_H
