@@ -59,13 +59,12 @@ protected:
     QVector<ros::Publisher> _pubs;
     cv::Mat _conversionMat;
     //cam
-    image_transport::ImageTransport* _it;
     image_transport::Subscriber* _itSub;
 
     int sendEmptyCommand(QString commandTopic);
     void navDataCallback(const ardrone_autonomy::Navdata& navData);
     void testCallback(const std_msgs::String::ConstPtr& msg);
-    void cameraCallback(const sensor_msgs::ImageConstPtr& msg);
+//    void cameraCallback(const sensor_msgs::ImageConstPtr& msg);
 };
 }//namespace
 #endif // MAINWINDOW_H

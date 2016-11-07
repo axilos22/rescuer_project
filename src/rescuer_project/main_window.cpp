@@ -18,9 +18,7 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     _console->setText("Console");
     // add widget to the user interface
     context.addWidget(_centralWidget);
-    //TODO check if rosnode is set
     //init rosnode and map nodeHandle object
-    //~ _nh = new ros::NodeHandle;
     _nh = &(getNodeHandle());
     _rate = new ros::Rate(30); //30ms rate
     //Adding custom types for ROS data transmission
@@ -38,30 +36,30 @@ void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
     ROS_INFO("I heard: [%s]", msg->data.c_str());
 }
 
-void MainWindow::cameraCallback(const sensor_msgs::ImageConstPtr &msg)
-{
-	ROS_INFO("Camera callback");
-	//~ try {
-		//~ cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::RGB8);
-	//~ }
-	//~ catch(cv_bridge::Exception e) {
-        //~ ROS_ERROR("Could not convert from %s to bgr8.",msg->encoding.c_str());
-    //~ }
-    //~ try {
-		//~ cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::RGB8);
-		//~ _conversionMat = cv_ptr->image;
-		//~ ROS_INFO("Converted to cv:Mat");
-        //~ QImage img(_conversionMat.data,_conversionMat.cols,_conversionMat.rows,_conversionMat.step[0],QImage::Format_RGB888);
-        //~ QPixmap pix;
-        //~ ROS_INFO("Now put QImage into QPixmap");
-        //~ if(pix.convertFromImage(img)) {
-            //~ emit camImgUpdated(pix);
-        //~ } else {
-            //~ ROS_ERROR("Failed converting QImage into QPixmap");
-        //~ }
-    //~ }
+//void MainWindow::cameraCallback(const sensor_msgs::ImageConstPtr &msg)
+//{
+//	ROS_INFO("Camera callback");
+//	//~ try {
+//		//~ cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::RGB8);
+//	//~ }
+//	//~ catch(cv_bridge::Exception e) {
+//        //~ ROS_ERROR("Could not convert from %s to bgr8.",msg->encoding.c_str());
+//    //~ }
+//    //~ try {
+//		//~ cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::RGB8);
+//		//~ _conversionMat = cv_ptr->image;
+//		//~ ROS_INFO("Converted to cv:Mat");
+//        //~ QImage img(_conversionMat.data,_conversionMat.cols,_conversionMat.rows,_conversionMat.step[0],QImage::Format_RGB888);
+//        //~ QPixmap pix;
+//        //~ ROS_INFO("Now put QImage into QPixmap");
+//        //~ if(pix.convertFromImage(img)) {
+//            //~ emit camImgUpdated(pix);
+//        //~ } else {
+//            //~ ROS_ERROR("Failed converting QImage into QPixmap");
+//        //~ }
+//    //~ }
 
-}
+//}
 
 void MainWindow::shutdownPlugin()
 {
@@ -130,6 +128,7 @@ void MainWindow::connectWithDrone()
     ROS_DEBUG("Subbed to test sub");
     _subs.append(droneNavDataSub);
     _subs.append(testSub);
+    image_transport::ImageTransport it(nh);
 //    _it = new image_transport::ImageTransport(nh);
 //    _itSub = new image_transport::Subscriber(_it->subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this));
 //    image_transport::ImageTransport it = image_transport::ImageTransport(nh);
