@@ -6,18 +6,22 @@
 #include <ros/ros.h>
 #include <ros/macros.h>
 #include <image_transport/image_transport.h>
-#include <opencv2/highgui/highgui.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <float.h>
 /*ROS-msg*/
 #include <std_msgs/Empty.h>
-#include "std_msgs/String.h"
+#include <std_msgs/String.h>
 #include <std_msgs/Float32.h>
+#include <sensor_msgs/Image.h>
+#include <sensor_msgs/image_encodings.h>
 /*QT*/
 #include <QTextEdit>
 #include <QString>
 #include <QWidget>
 #include <QVector>
+/*Open-CV*/
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 /*AR Drone*/
 #include <ardrone_autonomy/Navdata.h>
 /*own*/
@@ -56,7 +60,7 @@ protected:
     cv::Mat _conversionMat;
     //cam
     image_transport::ImageTransport* _it;
-    image_transport::Subscriber *_itSub;
+    image_transport::Subscriber* _itSub;
 
     int sendEmptyCommand(QString commandTopic);
     void navDataCallback(const ardrone_autonomy::Navdata& navData);

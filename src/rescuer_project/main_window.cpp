@@ -122,16 +122,21 @@ int MainWindow::sendEmptyCommand(QString commandTopic)
 
 void MainWindow::connectWithDrone()
 {
+    ros::NodeHandle nh = getNodeHandle();
     ROS_DEBUG("@connect with drone");
-    ros::Subscriber droneNavDataSub = (*_nh).subscribe("/ardrone/navdata",1,&MainWindow::navDataCallback,this);
+    ros::Subscriber droneNavDataSub = nh.subscribe("/ardrone/navdata",1,&MainWindow::navDataCallback,this);
     ROS_DEBUG("Subbed to navdata");
-    ros::Subscriber testSub = (*_nh).subscribe("/test",1,&MainWindow::testCallback,this);
+    ros::Subscriber testSub = nh.subscribe("/test",1,&MainWindow::testCallback,this);
     ROS_DEBUG("Subbed to test sub");
-    _it = new image_transport::ImageTransport((*_nh));
-    (*_itSub) = _it->subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this);
-    ROS_INFO("Subbed to the camera");
     _subs.append(droneNavDataSub);
     _subs.append(testSub);
+//    _it = new image_transport::ImageTransport(nh);
+//    _itSub = new image_transport::Subscriber(_it->subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this));
+//    image_transport::ImageTransport it = image_transport::ImageTransport(nh);
+//    image_transport::Subscriber sub = it.subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this);
+//    _it = &it;
+//    _itSub = &sub;
+//    ROS_INFO("Subbed to the camera");
     log("Drone connected.");
     ROS_INFO("-- all subs Ok");
 }
