@@ -112,34 +112,37 @@ if("${qt_gui_cpp_USE_QT_MAJOR_VERSION} " STREQUAL "5 ")
 else()
   target_link_libraries(${PROJECT_NAME} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 endif()
+## Library linking
+#target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 #############
 ## Install ##
 #############
 
-find_package(class_loader)
-class_loader_hide_library_symbols(${PROJECT_NAME})
+#find_package(class_loader)
+#class_loader_hide_library_symbols(${PROJECT_NAME})
 
-install(FILES plugin.xml
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-)
+#install(FILES plugin.xml
+#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+#)
 
-install(TARGETS ${PROJECT_NAME}
-  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-)
+#install(TARGETS ${PROJECT_NAME}
+#  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+#  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+#)
 
-install(PROGRAMS scripts/rescuer_project
-  DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
-)
-install(PROGRAMS scripts/rescuer_project
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
+#install(PROGRAMS scripts/rescuer_project
+#  DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+#)
+#install(PROGRAMS scripts/rescuer_project
+#  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+#)
 
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-)
+#install(DIRECTORY include/${PROJECT_NAME}/
+#  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+#)
 #############
 ## Testing ##
 #############
