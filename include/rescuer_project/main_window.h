@@ -9,10 +9,7 @@
 #include <ros/ros.h>
 #include <ros/macros.h>
 #include <cv_bridge/cv_bridge.h>
-<<<<<<< HEAD
-=======
 #include <float.h>
->>>>>>> camera_view
 #include <image_transport/image_transport.h>
 /*ROS-msg*/
 #include <std_msgs/Empty.h>
