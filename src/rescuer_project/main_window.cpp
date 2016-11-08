@@ -1,6 +1,4 @@
 #include "rescuer_project/main_window.h"
-#include <pluginlib/class_list_macros.h>
-#include <QStringList>
 namespace rescuer_project {
 
 MainWindow::MainWindow():rqt_gui_cpp::Plugin(),_centralWidget(0) {
@@ -18,9 +16,7 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     _console->setText("Console");
     // add widget to the user interface
     context.addWidget(_centralWidget);
-    //TODO check if rosnode is set
     //init rosnode and map nodeHandle object
-    //~ _nh = new ros::NodeHandle;
     _nh = &(getNodeHandle());
     _rate = new ros::Rate(30); //30ms rate
     //Adding custom types for ROS data transmission
@@ -31,10 +27,36 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(_ui.connectButton,SIGNAL(pressed()),this,SLOT(connectWithDrone()));
     connect(this,SIGNAL(batteryUpdated(int)),_ui.batteryProgressBar,SLOT(setValue(int)));
     connect(this,SIGNAL(rotDataUpdated(QVector<float>)),this,SLOT(updateRotValues(QVector<float>)));
+    connect(this,SIGNAL(camImgUpdated(QPixmap)),_ui.droneCamLabel,SLOT(setPixmap(QPixmap)));
+    connect(this,SIGNAL(droneStateChanged(int)),_ui.stateSpinBox,SLOT(setValue(int)));
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
     ROS_INFO("I heard: [%s]", msg->data.c_str());
+}
+
+/**
+ * @brief MainWindow::cameraCallback
+ * @param msg
+ * Drone cam info :Drone 2: 640x360@20fps H264 codec with no record stream
+ */
+void MainWindow::cameraCallback(const sensor_msgs::ImageConstPtr &msg)
+{
+    ROS_INFO("Camera callback");
+    try {
+        cv_bridge::CvImageConstPtr cvPtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::RGB8);
+        _conversionMat=cvPtr->image;
+        ROS_INFO("Converted image");
+        QImage img(_conversionMat.data,_conversionMat.cols,_conversionMat.rows,_conversionMat.step[0],QImage::Format_RGB888);
+        QPixmap pix;
+        if(pix.convertFromImage(img)) {
+            emit camImgUpdated(pix);
+        } else {
+            ROS_ERROR("Failed putting image into pixmap");
+        }
+    } catch(cv_bridge::Exception e) {
+        ROS_ERROR("Could not convert from %s to bgr8.",msg->encoding.c_str());
+    }
 }
 
 void MainWindow::shutdownPlugin()
@@ -46,6 +68,7 @@ void MainWindow::shutdownPlugin()
 	for (int i = 0; i < _pubs.size(); ++i) {
 		_pubs[i].shutdown();
 	}
+    _itSub->shutdown();
 }
 
 void MainWindow::saveSettings(qt_gui_cpp::Settings& plugin_settings, qt_gui_cpp::Settings& instance_settings) const
@@ -64,6 +87,11 @@ void MainWindow::log(QString msg)
 {
     QString oldText = _console->toPlainText();
     _console->setText(oldText+"\n>>"+msg);
+}
+
+int MainWindow::droneState() const
+{
+    return m_droneState;
 }
 
 void MainWindow::droneTakeOff()
@@ -104,8 +132,10 @@ void MainWindow::connectWithDrone()
     ROS_DEBUG("Subbed to test sub");
     _subs.append(droneNavDataSub);
     _subs.append(testSub);
+    image_transport::ImageTransport it(nh);
+    _itSub = new image_transport::Subscriber(it.subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this));
+    ROS_DEBUG("Subbed to the camera");
     log("Drone connected.");
-    ROS_INFO("-- all subs Ok");
 }
 
 void MainWindow::updateRotValues(QVector<float> rotV)
@@ -114,6 +144,14 @@ void MainWindow::updateRotValues(QVector<float> rotV)
     QLineEdit* rotLe = _ui.rotXYZLineEdit;
     rotLe->clear();
     rotLe->setText(displayed);
+}
+
+void MainWindow::setDroneState(int arg)
+{
+    if (m_droneState != arg) {
+        m_droneState = arg;
+        emit droneStateChanged(arg);
+    }
 }
 /**
  * @brief MainWindow::navDataCallback
@@ -126,6 +164,8 @@ void MainWindow::navDataCallback(const ardrone_autonomy::Navdata &navData)
     QVector<float> rot;
     rot<<navData.rotX<<navData.rotY <<navData.rotZ;
     emit rotDataUpdated(rot);
+    u_int32_t state = navData.state;
+    emit droneStateChanged((int)state);
 }
 } // namespace
 PLUGINLIB_EXPORT_CLASS(rescuer_project::MainWindow,rqt_gui_cpp::Plugin)
