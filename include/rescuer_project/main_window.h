@@ -73,10 +73,12 @@ protected:
     cv::Mat _conversionMat;
     //cam
     image_transport::Subscriber* _itSub;
+    QPixmap _cameraPixmap;
 
     int sendEmptyCommand(QString commandTopic);
     void navDataCallback(const ardrone_autonomy::Navdata& navData);
     void testCallback(const std_msgs::String::ConstPtr& msg);
+    void cameraCallback(const sensor_msgs::ImageConstPtr &msg);
 };
 }//namespace
 #endif // MAINWINDOW_H

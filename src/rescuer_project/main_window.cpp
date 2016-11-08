@@ -42,15 +42,14 @@ void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
  */
 void MainWindow::cameraCallback(const sensor_msgs::ImageConstPtr &msg)
 {
-    ROS_INFO("Camera callback");
+    ROS_DEBUG("Camera callback");
     try {
         cv_bridge::CvImageConstPtr cvPtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::RGB8);
         _conversionMat=cvPtr->image;
-        ROS_INFO("Converted image");
+        ROS_DEBUG("Converted image");
         QImage img(_conversionMat.data,_conversionMat.cols,_conversionMat.rows,_conversionMat.step[0],QImage::Format_RGB888);
-        QPixmap pix;
-        if(pix.convertFromImage(img)) {
-            emit camImgUpdated(pix);
+        if(_cameraPixmap.convertFromImage(img)) {
+            emit camImgUpdated(_cameraPixmap);
         } else {
             ROS_ERROR("Failed putting image into pixmap");
         }
@@ -98,14 +97,30 @@ void MainWindow::droneTakeOff()
 {
     ROS_DEBUG("Drone has to take off now.");
     log("Drone taking off.");
-    sendEmptyCommand("/ardrone/takeoff");
+    std_msgs::Empty emptyMsg;
+    ros::Publisher droneTakeOffPub = getNodeHandle().advertise<std_msgs::Empty>("/ardrone/takeoff",1);
+    int loop=0;
+    while(ros::ok() && droneState()!=6 && loop<100) {
+        droneTakeOffPub.publish(emptyMsg);
+        loop++;
+        ros::spinOnce();
+        _rate->sleep();
+    }
 }
 
 void MainWindow::droneLand()
 {
     ROS_DEBUG("Drone has to land now.");
     log("Drone landing");
-    sendEmptyCommand("/ardrone/land");
+    std_msgs::Empty emptyMsg;
+    ros::Publisher droneTakeOffPub = getNodeHandle().advertise<std_msgs::Empty>("/ardrone/land",1);
+    int loop=0;
+    while(ros::ok() && droneState()!=8 && loop<100) {
+        droneTakeOffPub.publish(emptyMsg);
+        loop++;
+        ros::spinOnce();
+        _rate->sleep();
+    }
 }
 
 int MainWindow::sendEmptyCommand(QString commandTopic)
@@ -165,7 +180,7 @@ void MainWindow::navDataCallback(const ardrone_autonomy::Navdata &navData)
     rot<<navData.rotX<<navData.rotY <<navData.rotZ;
     emit rotDataUpdated(rot);
     u_int32_t state = navData.state;
-    emit droneStateChanged((int)state);
+    setDroneState(state);
 }
 } // namespace
 PLUGINLIB_EXPORT_CLASS(rescuer_project::MainWindow,rqt_gui_cpp::Plugin)
