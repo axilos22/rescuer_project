@@ -184,6 +184,12 @@
       <layout class="QVBoxLayout" name="droneLayout">
        <item>
         <widget class="QLabel" name="droneCamLabel">
+         <property name="maximumSize">
+          <size>
+           <width>640</width>
+           <height>360</height>
+          </size>
+         </property>
          <property name="cursor">
           <cursorShape>CrossCursor</cursorShape>
          </property>
@@ -216,6 +222,26 @@
             <property name="fieldGrowthPolicy">
              <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
             </property>
+            <item row="0" column="0">
+             <widget class="QLabel" name="stateLabel">
+              <property name="text">
+               <string>State</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="stateSpinBox">
+              <property name="autoFillBackground">
+               <bool>true</bool>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::NoButtons</enum>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="0">
              <widget class="QLabel" name="rotXYZLabel">
               <property name="text">
@@ -226,15 +252,51 @@
             <item row="1" column="1">
              <widget class="QLineEdit" name="rotXYZLineEdit"/>
             </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="stateLabel">
+            <item row="2" column="0">
+             <widget class="QLabel" name="vXYZLabel">
               <property name="text">
-               <string>State</string>
+               <string>v[x,y,z]</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="QSpinBox" name="stateSpinBox">
+            <item row="2" column="1">
+             <widget class="QLineEdit" name="vXYZLineEdit"/>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="altLabel">
+              <property name="text">
+               <string>Alt</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QSpinBox" name="altSpinBox">
+              <property name="frame">
+               <bool>true</bool>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::NoButtons</enum>
+              </property>
+              <property name="keyboardTracking">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="tagCountLabel">
+              <property name="text">
+               <string>tag Count</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QSpinBox" name="tagCountSpinBox">
+              <property name="toolTip">
+               <string>Number of tags detected.</string>
+              </property>
               <property name="readOnly">
                <bool>true</bool>
               </property>
@@ -275,6 +337,16 @@
           <widget class="QPushButton" name="switchCamPushButton">
            <property name="text">
             <string>SwitchCam</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QPushButton" name="flatTrimButton">
+           <property name="toolTip">
+            <string>request to AR-Drone to re-calibrate its rotation estimates assuming that it is on a flat surface.</string>
+           </property>
+           <property name="text">
+            <string>Flat Trim</string>
            </property>
           </widget>
          </item>

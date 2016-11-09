@@ -15,6 +15,7 @@
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Float32.h>
+#include <std_srvs/Empty.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/image_encodings.h>
 /*QT*/
@@ -23,11 +24,15 @@
 #include <QWidget>
 #include <QVector>
 #include <QStringList>
+#include <QSpinBox>
+#include <QPalette>
 /*Open-CV*/
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 /*AR Drone*/
 #include <ardrone_autonomy/Navdata.h>
+#include <ardrone_autonomy/CamSelect.h>
+#include <ardrone_autonomy/CamSelectRequest.h>
 /*own*/
 #include <ui_main_window.h>
 #include <rescuer_project/rescuer_widget.h>
@@ -47,6 +52,7 @@ public:
     virtual void restoreSettings(const qt_gui_cpp::Settings& plugin_settings, const qt_gui_cpp::Settings& instance_settings);
     void log(QString msg);
     int droneState() const;
+    QString format3Data(const QVector<float> tab);
 
 public slots:
     void droneTakeOff();
@@ -54,12 +60,18 @@ public slots:
     void connectWithDrone();
     void updateRotValues(QVector<float> rotV);
     void setDroneState(int arg);
+    void updateVValues(const QVector<float> vel);
+    void swapCamera();
+    void flatTrim();
 
 signals:
     void batteryUpdated(int percent);
     void rotDataUpdated(QVector<float>);
+    void velDataUpdated(QVector<float>);
     void camImgUpdated(QPixmap);
     void droneStateChanged(int arg);
+    void altUpdated(int alt);
+    void tagCountUpdated(int tc);
 
 protected:
     QWidget* _centralWidget;

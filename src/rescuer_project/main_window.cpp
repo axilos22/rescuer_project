@@ -25,10 +25,15 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(_ui.droneTakeOffButton,SIGNAL(pressed()),this,SLOT(droneTakeOff()));
     connect(_ui.droneLandButton,SIGNAL(pressed()),this,SLOT(droneLand()));
     connect(_ui.connectButton,SIGNAL(pressed()),this,SLOT(connectWithDrone()));
+    connect(_ui.switchCamPushButton,SIGNAL(pressed()),this,SLOT(swapCamera()));
+    connect(_ui.flatTrimButton,SIGNAL(pressed()),this,SLOT(flatTrim()));
     connect(this,SIGNAL(batteryUpdated(int)),_ui.batteryProgressBar,SLOT(setValue(int)));
     connect(this,SIGNAL(rotDataUpdated(QVector<float>)),this,SLOT(updateRotValues(QVector<float>)));
     connect(this,SIGNAL(camImgUpdated(QPixmap)),_ui.droneCamLabel,SLOT(setPixmap(QPixmap)));
     connect(this,SIGNAL(droneStateChanged(int)),_ui.stateSpinBox,SLOT(setValue(int)));
+    connect(this,SIGNAL(velDataUpdated(QVector<float>)),this,SLOT(updateVValues(QVector<float>)));
+    connect(this,SIGNAL(altUpdated(int)),_ui.altSpinBox,SLOT(setValue(int)));
+    connect(this,SIGNAL(tagCountUpdated(int)),_ui.tagCountSpinBox,SLOT(setValue(int)));
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
@@ -62,12 +67,13 @@ void MainWindow::shutdownPlugin()
 {
     // TODO unregister all publishers here
     for (int i = 0; i < _subs.size(); ++i) {
-		_subs[i].shutdown();
-	}
-	for (int i = 0; i < _pubs.size(); ++i) {
-		_pubs[i].shutdown();
-	}
-    _itSub->shutdown();
+        _subs[i].shutdown();
+    }
+    for (int i = 0; i < _pubs.size(); ++i) {
+        _pubs[i].shutdown();
+    }
+    if(_itSub)
+        _itSub->shutdown();
 }
 
 void MainWindow::saveSettings(qt_gui_cpp::Settings& plugin_settings, qt_gui_cpp::Settings& instance_settings) const
@@ -91,6 +97,11 @@ void MainWindow::log(QString msg)
 int MainWindow::droneState() const
 {
     return m_droneState;
+}
+
+QString MainWindow::format3Data(const QVector<float> tab)
+{
+    return "["+QString::number(tab.at(0))+","+QString::number(tab.at(1))+","+QString::number(tab.at(2))+"]";
 }
 
 void MainWindow::droneTakeOff()
@@ -167,6 +178,33 @@ void MainWindow::setDroneState(int arg)
         m_droneState = arg;
         emit droneStateChanged(arg);
     }
+    if(arg==0) {
+        QPalette myPal(Qt::red);
+        _ui.stateSpinBox->setPalette(myPal);
+    }
+}
+
+void MainWindow::updateVValues(const QVector<float> vel)
+{
+    QString displayed = format3Data(vel);
+    _ui.vXYZLineEdit->clear();
+    _ui.vXYZLineEdit->setText(displayed);
+}
+
+void MainWindow::swapCamera()
+{
+    ROS_DEBUG("Swap Camera callback");
+    ros::ServiceClient swapCamService = getNodeHandle().serviceClient<std_srvs::Empty>("/ardrone/togglecam");
+    std_srvs::Empty emptyCall;
+    swapCamService.call(emptyCall);
+}
+
+void MainWindow::flatTrim()
+{
+    ros::ServiceClient flatTrimService = getNodeHandle().serviceClient<std_srvs::Empty>("/ardrone/flattrim");
+    std_srvs::Empty emptyCall;
+    flatTrimService.call(emptyCall);
+    log("Flat trim executed");
 }
 /**
  * @brief MainWindow::navDataCallback
@@ -181,6 +219,11 @@ void MainWindow::navDataCallback(const ardrone_autonomy::Navdata &navData)
     emit rotDataUpdated(rot);
     u_int32_t state = navData.state;
     setDroneState(state);
+    QVector<float> vel;
+    vel<<navData.vx<<navData.vy<<navData.vz;
+    emit velDataUpdated(vel);
+    emit altUpdated((int)navData.altd);
+    emit tagCountUpdated((int)navData.tags_count);
 }
 } // namespace
 PLUGINLIB_EXPORT_CLASS(rescuer_project::MainWindow,rqt_gui_cpp::Plugin)
