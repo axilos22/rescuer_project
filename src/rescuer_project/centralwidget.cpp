@@ -9,6 +9,12 @@ CentralWidget::CentralWidget(QWidget *parent) :
 void CentralWidget::keyPressEvent(QKeyEvent *event)
 {
     switch (event->key()) {
+    case Qt::Key_PageUp:
+        emit pageUpPressed();
+        break;
+    case Qt::Key_PageDown:
+        emit pageDownPressed();
+        break;
     case Qt::Key_Up:
         emit upPressed();
         break;

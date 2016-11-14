@@ -11,6 +11,8 @@ public:
 protected:
     void keyPressEvent(QKeyEvent *event);
 signals:
+    void pageUpPressed();
+    void pageDownPressed();
     void upPressed();
     void downPressed();
     void leftPressed();

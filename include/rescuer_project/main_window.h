@@ -18,6 +18,7 @@
 #include <std_srvs/Empty.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/image_encodings.h>
+#include <geometry_msgs/Twist.h>
 /*QT*/
 #include <QTextEdit>
 #include <QString>
@@ -64,6 +65,8 @@ public slots:
     void swapCamera();
     void flatTrim();
     void droneUp();
+    void droneDown();
+    void activateAutoHoverMode();
 
 signals:
     void batteryUpdated(int percent);

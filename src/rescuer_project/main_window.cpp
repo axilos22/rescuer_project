@@ -35,7 +35,8 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(this,SIGNAL(velDataUpdated(QVector<float>)),this,SLOT(updateVValues(QVector<float>)));
     connect(this,SIGNAL(altUpdated(int)),_ui.altSpinBox,SLOT(setValue(int)));
     connect(this,SIGNAL(tagCountUpdated(int)),_ui.tagCountSpinBox,SLOT(setValue(int)));
-    connect(_centralWidget,SIGNAL(upPressed()),this,SLOT(droneUp()));
+    connect(_centralWidget,SIGNAL(pageUpPressed()),this,SLOT(droneUp()));
+    connect(_centralWidget,SIGNAL(pageDownPressed()),this,SLOT(droneDown()));
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
@@ -100,6 +101,8 @@ void MainWindow::shutdownPlugin()
     }
     if(_itSub)
         _itSub->shutdown();
+    if(_itSubRescuer)
+        _itSubRescuer->shutdown();
 }
 
 void MainWindow::saveSettings(qt_gui_cpp::Settings& plugin_settings, qt_gui_cpp::Settings& instance_settings) const
@@ -237,8 +240,36 @@ void MainWindow::flatTrim()
 
 void MainWindow::droneUp()
 {
-    log("done should go up");
-    ROS_INFO("UP!");
+    ROS_INFO("Drone up.");
+    log("up");
+    ros::Publisher cmdVel = getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1);
+    geometry_msgs::Twist cmd;
+    cmd.linear.z = .2;
+    cmdVel.publish(cmd);
+}
+
+void MainWindow::droneDown()
+{
+    ROS_INFO("Drone down");
+    log("down");
+    ros::Publisher cmdVel = getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1);
+    geometry_msgs::Twist cmd;
+    cmd.linear.z = -.2;
+    cmdVel.publish(cmd);
+}
+
+void MainWindow::activateAutoHoverMode()
+{
+    log("Auto-hover mode activated.");
+    ros::Publisher cmdVel = getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1);
+    geometry_msgs::Twist cmd;
+    cmd.linear.x=0;
+    cmd.linear.y=0;
+    cmd.linear.z=0;
+    cmd.angular.z=0;
+    cmd.angular.x=.1;
+    cmd.angular.y=.1;
+    cmdVel.publish(cmd);
 }
 /**
  * @brief MainWindow::navDataCallback
