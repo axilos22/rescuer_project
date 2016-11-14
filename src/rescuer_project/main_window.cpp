@@ -10,7 +10,7 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     // access standalone command line arguments
     QStringList argv = context.argv();
     // create QWidget
-    _centralWidget = new QWidget;
+    _centralWidget = new CentralWidget;
     _ui.setupUi(_centralWidget);
     _console = _ui.consoleTextEdit;
     _console->setText("Console");
@@ -34,6 +34,7 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(this,SIGNAL(velDataUpdated(QVector<float>)),this,SLOT(updateVValues(QVector<float>)));
     connect(this,SIGNAL(altUpdated(int)),_ui.altSpinBox,SLOT(setValue(int)));
     connect(this,SIGNAL(tagCountUpdated(int)),_ui.tagCountSpinBox,SLOT(setValue(int)));
+    connect(_centralWidget,SIGNAL(upPressed()),this,SLOT(droneUp()));
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
@@ -178,10 +179,11 @@ void MainWindow::setDroneState(int arg)
         m_droneState = arg;
         emit droneStateChanged(arg);
     }
+    QPalette myPal;
     if(arg==0) {
-        QPalette myPal(Qt::red);
-        _ui.stateSpinBox->setPalette(myPal);
+        myPal.setColor(QPalette::Base,Qt::red);
     }
+    _ui.stateSpinBox->setPalette(myPal);
 }
 
 void MainWindow::updateVValues(const QVector<float> vel)
@@ -205,6 +207,12 @@ void MainWindow::flatTrim()
     std_srvs::Empty emptyCall;
     flatTrimService.call(emptyCall);
     log("Flat trim executed");
+}
+
+void MainWindow::droneUp()
+{
+    log("done should go up");
+    ROS_INFO("UP!");
 }
 /**
  * @brief MainWindow::navDataCallback

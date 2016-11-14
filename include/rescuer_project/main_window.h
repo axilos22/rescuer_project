@@ -35,7 +35,7 @@
 #include <ardrone_autonomy/CamSelectRequest.h>
 /*own*/
 #include <ui_main_window.h>
-#include <rescuer_project/rescuer_widget.h>
+#include <rescuer_project/centralwidget.h>
 
 namespace rescuer_project {
 
@@ -63,6 +63,7 @@ public slots:
     void updateVValues(const QVector<float> vel);
     void swapCamera();
     void flatTrim();
+    void droneUp();
 
 signals:
     void batteryUpdated(int percent);
@@ -74,7 +75,7 @@ signals:
     void tagCountUpdated(int tc);
 
 protected:
-    QWidget* _centralWidget;
+    CentralWidget* _centralWidget;
     Ui::MainWindowWidget _ui;
     ros::NodeHandle* _nh;
     ros::Rate* _rate;
