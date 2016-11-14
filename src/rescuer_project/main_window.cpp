@@ -30,6 +30,7 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(this,SIGNAL(batteryUpdated(int)),_ui.batteryProgressBar,SLOT(setValue(int)));
     connect(this,SIGNAL(rotDataUpdated(QVector<float>)),this,SLOT(updateRotValues(QVector<float>)));
     connect(this,SIGNAL(camImgUpdated(QPixmap)),_ui.droneCamLabel,SLOT(setPixmap(QPixmap)));
+    connect(this,SIGNAL(camRescuerImgUpdated(QPixmap)),_ui.rescuerCamLabel,SLOT(setPixmap(QPixmap)));
     connect(this,SIGNAL(droneStateChanged(int)),_ui.stateSpinBox,SLOT(setValue(int)));
     connect(this,SIGNAL(velDataUpdated(QVector<float>)),this,SLOT(updateVValues(QVector<float>)));
     connect(this,SIGNAL(altUpdated(int)),_ui.altSpinBox,SLOT(setValue(int)));
@@ -40,6 +41,30 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
     ROS_INFO("I heard: [%s]", msg->data.c_str());
 }
+
+/**
+ * @brief MainWindow::cameraRescuerCallback
+ * @param msg
+ * Rescuer cam info :Kinect: (640x360@20fps H264 codec with no record stream?)
+ */
+void MainWindow::cameraRescuerCallback(const sensor_msgs::ImageConstPtr &msg)
+{
+    ROS_DEBUG("Camera rescuer callback");
+    try {
+        cv_bridge::CvImageConstPtr cvPtr = cv_bridge::toCvShare(msg, sensor_msgs::image_encodings::RGB8);
+        _conversionMat=cvPtr->image;
+        ROS_DEBUG("Converted image");
+        QImage img(_conversionMat.data,_conversionMat.cols,_conversionMat.rows,_conversionMat.step[0],QImage::Format_RGB888);
+        if(_cameraPixmap.convertFromImage(img)) {
+            emit camRescuerImgUpdated(_cameraPixmap);
+        } else {
+            ROS_ERROR("Failed putting image into pixmap");
+        }
+    } catch(cv_bridge::Exception e) {
+        ROS_ERROR("Could not convert from %s to bgr8.",msg->encoding.c_str());
+    }
+}
+
 
 /**
  * @brief MainWindow::cameraCallback
@@ -163,6 +188,7 @@ void MainWindow::connectWithDrone()
     _itSub = new image_transport::Subscriber(it.subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this));
     ROS_DEBUG("Subbed to the camera");
     log("Drone connected.");
+    _itSubRescuer = new image_transport::Subscriber(it.subscribe("/kinect/rgb/image_raw",1,&MainWindow::cameraRescuerCallback,this));
 }
 
 void MainWindow::updateRotValues(QVector<float> rotV)

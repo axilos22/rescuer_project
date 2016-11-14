@@ -70,6 +70,7 @@ signals:
     void rotDataUpdated(QVector<float>);
     void velDataUpdated(QVector<float>);
     void camImgUpdated(QPixmap);
+    void camRescuerImgUpdated(QPixmap);
     void droneStateChanged(int arg);
     void altUpdated(int alt);
     void tagCountUpdated(int tc);
@@ -86,12 +87,14 @@ protected:
     cv::Mat _conversionMat;
     //cam
     image_transport::Subscriber* _itSub;
+    image_transport::Subscriber* _itSubRescuer;
     QPixmap _cameraPixmap;
 
     int sendEmptyCommand(QString commandTopic);
     void navDataCallback(const ardrone_autonomy::Navdata& navData);
     void testCallback(const std_msgs::String::ConstPtr& msg);
     void cameraCallback(const sensor_msgs::ImageConstPtr &msg);
+    void cameraRescuerCallback(const sensor_msgs::ImageConstPtr &msg);
 };
 }//namespace
 #endif // MAINWINDOW_H
