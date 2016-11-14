@@ -32,9 +32,11 @@ endif()
 #Ax: my file listing
 set(rescuer_project_SRCS
   src/rescuer_project/main_window.cpp
+src/rescuer_project/centralwidget.cpp
 )
 set(rescuer_project_HDRS
   include/rescuer_project/main_window.h
+include/rescuer_project/centralwidget.h
 )
 set(rescuer_project_UIS
   src/rescuer_project/main_window.ui
