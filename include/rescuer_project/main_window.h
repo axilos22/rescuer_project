@@ -36,15 +36,14 @@
 #include <ardrone_autonomy/CamSelectRequest.h>
 /*own*/
 #include <ui_main_window.h>
-#include <rescuer_project/centralwidget.h>
+#include <rescuer_project/lineeditteleop.h>
 
 namespace rescuer_project {
 
 class MainWindow : public rqt_gui_cpp::Plugin {
     Q_OBJECT
     Q_PROPERTY(int droneState READ droneState WRITE setDroneState NOTIFY droneStateChanged)
-    int m_droneState;
-
+    Q_PROPERTY(bool isConnected READ isConnected WRITE setIsConnected NOTIFY isConnectedChanged)
 public:
     MainWindow();
     virtual void initPlugin(qt_gui_cpp::PluginContext& context);
@@ -54,6 +53,7 @@ public:
     void log(QString msg);
     int droneState() const;
     QString format3Data(const QVector<float> tab);
+    bool isConnected() const;
 
 public slots:
     void droneTakeOff();
@@ -64,9 +64,14 @@ public slots:
     void updateVValues(const QVector<float> vel);
     void swapCamera();
     void flatTrim();
+    void activateAutoHoverMode();
     void droneUp();
     void droneDown();
-    void activateAutoHoverMode();
+    void droneForward();
+    void droneBackward();
+    void droneLeft();
+    void droneRight();
+    void setIsConnected(bool arg);
 
 signals:
     void batteryUpdated(int percent);
@@ -77,9 +82,10 @@ signals:
     void droneStateChanged(int arg);
     void altUpdated(int alt);
     void tagCountUpdated(int tc);
+    void isConnectedChanged(bool arg);
 
 protected:
-    CentralWidget* _centralWidget;
+    QWidget* _centralWidget;
     Ui::MainWindowWidget _ui;
     ros::NodeHandle* _nh;
     ros::Rate* _rate;
@@ -92,12 +98,17 @@ protected:
     image_transport::Subscriber* _itSub;
     image_transport::Subscriber* _itSubRescuer;
     QPixmap _cameraPixmap;
+    LineEditTeleop *_teleop;
 
     int sendEmptyCommand(QString commandTopic);
     void navDataCallback(const ardrone_autonomy::Navdata& navData);
     void testCallback(const std_msgs::String::ConstPtr& msg);
     void cameraCallback(const sensor_msgs::ImageConstPtr &msg);
     void cameraRescuerCallback(const sensor_msgs::ImageConstPtr &msg);
+private:
+    float _defaultSpeed;
+    bool m_isConnected;
+    int m_droneState;
 };
 }//namespace
 #endif // MAINWINDOW_H
