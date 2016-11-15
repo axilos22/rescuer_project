@@ -72,6 +72,7 @@ public slots:
     void droneLeft();
     void droneRight();
     void setIsConnected(bool arg);
+    void droneReset();
 
 signals:
     void batteryUpdated(int percent);

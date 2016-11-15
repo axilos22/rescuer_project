@@ -32,6 +32,8 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(_ui.connectButton,SIGNAL(pressed()),this,SLOT(connectWithDrone()));
     connect(_ui.switchCamPushButton,SIGNAL(pressed()),this,SLOT(swapCamera()));
     connect(_ui.flatTrimButton,SIGNAL(pressed()),this,SLOT(flatTrim()));
+    connect(_ui.autoHoverButton,SIGNAL(pressed()),this,SLOT(activateAutoHoverMode()));
+    connect(_ui.resetButton,SIGNAL(pressed()),this,SLOT(droneReset()));
     connect(this,SIGNAL(batteryUpdated(int)),_ui.batteryProgressBar,SLOT(setValue(int)));
     connect(this,SIGNAL(rotDataUpdated(QVector<float>)),this,SLOT(updateRotValues(QVector<float>)));
     connect(this,SIGNAL(camImgUpdated(QPixmap)),_ui.droneCamLabel,SLOT(setPixmap(QPixmap)));
@@ -264,8 +266,8 @@ void MainWindow::activateAutoHoverMode()
     cmd.linear.y=0;
     cmd.linear.z=0;
     cmd.angular.z=0;
-    cmd.angular.x=.1;
-    cmd.angular.y=.1;
+    cmd.angular.x=0;
+    cmd.angular.y=0;
     cmdVel.publish(cmd);
 }
 
@@ -277,6 +279,7 @@ void MainWindow::droneUp()
     geometry_msgs::Twist cmd;
     cmd.linear.z = _defaultSpeed;
     cmdVel.publish(cmd);
+    ros::spinOnce();
 }
 
 void MainWindow::droneDown()
@@ -287,6 +290,7 @@ void MainWindow::droneDown()
     geometry_msgs::Twist cmd;
     cmd.linear.z = -_defaultSpeed;
     cmdVel.publish(cmd);
+    ros::spinOnce();
 }
 
 void MainWindow::droneForward()
@@ -315,7 +319,7 @@ void MainWindow::droneLeft()
     log("Drone left");
     ros::Publisher cmdVel = getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1);
     geometry_msgs::Twist cmd;
-    cmd.linear.y = _defaultSpeed;
+    cmd.angular.z = _defaultSpeed;
     cmdVel.publish(cmd);
 }
 
@@ -325,7 +329,7 @@ void MainWindow::droneRight()
     log("Drone right");
     ros::Publisher cmdVel = getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1);
     geometry_msgs::Twist cmd;
-    cmd.linear.x = -_defaultSpeed;
+    cmd.angular.z = -_defaultSpeed;
     cmdVel.publish(cmd);
 }
 
@@ -334,6 +338,21 @@ void MainWindow::setIsConnected(bool arg)
     if (m_isConnected != arg) {
         m_isConnected = arg;
         emit isConnectedChanged(arg);
+    }
+}
+
+void MainWindow::droneReset()
+{
+    ROS_DEBUG("Reset the drone");
+    log("Drone reset");
+    std_msgs::Empty emptyMsg;
+    ros::Publisher droneResetPub = getNodeHandle().advertise<std_msgs::Empty>("/ardrone/reset",1);
+    int loop=0;
+    while(ros::ok() && loop<100 && droneState()!=2) {
+        droneResetPub.publish(emptyMsg);
+        loop++;
+        ros::spinOnce();
+        _rate->sleep();
     }
 }
 
