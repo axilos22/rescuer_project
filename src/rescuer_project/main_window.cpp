@@ -268,7 +268,7 @@ void MainWindow::flatTrim()
 
 void MainWindow::activateAutoHoverMode()
 {
-    log("Auto-hover mode activated.");
+    /*log("Auto-hover mode activated.");*/
     ros::Publisher cmdVel = getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1);
     geometry_msgs::Twist cmd;
     cmd.linear.x=0;
@@ -283,7 +283,7 @@ void MainWindow::activateAutoHoverMode()
 void MainWindow::droneUp()
 {
     ROS_DEBUG("Drone up");
-    log("up");
+//    log("up");
     geometry_msgs::Twist cmd;
     cmd.linear.z = _defaultSpeed;
     _cmdVelPub->publish(cmd);
@@ -293,7 +293,7 @@ void MainWindow::droneUp()
 void MainWindow::droneDown()
 {
     ROS_DEBUG("Drone down");
-    log("down");
+//    log("down");
     geometry_msgs::Twist cmd;
     cmd.linear.z = -_defaultSpeed;
     _cmdVelPub->publish(cmd);
@@ -303,7 +303,7 @@ void MainWindow::droneDown()
 void MainWindow::droneForward()
 {
     ROS_DEBUG("Drone forward");
-    log("Drone forward");
+//    log("Drone forward");
     geometry_msgs::Twist cmd;
     cmd.linear.x = _defaultSpeed;
     _cmdVelPub->publish(cmd);
@@ -313,7 +313,7 @@ void MainWindow::droneForward()
 void MainWindow::droneBackward()
 {
     ROS_DEBUG("Drone backward");
-    log("Drone backward");
+//    log("Drone backward");
     geometry_msgs::Twist cmd;
     cmd.linear.x = -_defaultSpeed;
     _cmdVelPub->publish(cmd);
@@ -323,7 +323,7 @@ void MainWindow::droneBackward()
 void MainWindow::droneLeft()
 {
     ROS_DEBUG("Drone left");
-    log("Drone left");
+//    log("Drone left");
     geometry_msgs::Twist cmd;
     cmd.angular.z = _defaultSpeed;
     _cmdVelPub->publish(cmd);
@@ -333,7 +333,7 @@ void MainWindow::droneLeft()
 void MainWindow::droneRight()
 {
     ROS_DEBUG("Drone right");
-    log("Drone right");    
+//    log("Drone right");
     geometry_msgs::Twist cmd;
     cmd.angular.z = -_defaultSpeed;
     _cmdVelPub->publish(cmd);
