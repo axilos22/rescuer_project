@@ -90,12 +90,14 @@ protected:
     Ui::MainWindowWidget _ui;
     ros::NodeHandle* _nh;
     ros::Rate* _rate;
-    QTextEdit *_console;
+    QTextEdit *_console;    
+    /*ROS*/
     QVector<ros::Subscriber> _subs;
     ros::Subscriber _droneNavDataSub, _testSub;
-    QVector<ros::Publisher> _pubs;
-    cv::Mat _conversionMat;
+    QVector<ros::Publisher> _pubs;    
+    ros::Publisher* _cmdVelPub;
     //cam
+    cv::Mat _conversionMat;
     image_transport::Subscriber* _itSub;
     image_transport::Subscriber* _itSubRescuer;
     QPixmap _cameraPixmap;

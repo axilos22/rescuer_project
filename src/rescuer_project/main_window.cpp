@@ -3,7 +3,7 @@ namespace rescuer_project {
 
 MainWindow::MainWindow():rqt_gui_cpp::Plugin(),
     _centralWidget(0),
-    _defaultSpeed(.3),
+    _defaultSpeed(.2),
     m_isConnected(false),
     m_droneState(0)
 {
@@ -44,14 +44,19 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(this,SIGNAL(tagCountUpdated(int)),_ui.tagCountSpinBox,SLOT(setValue(int)));
     //Adding teleoperator
     _teleop = new LineEditTeleop;
-    _ui.formLayout->addRow(tr("&Teleop:"),_teleop);
+    _teleop->setEnabled(false);
+    _ui.formLayout->addRow(tr("&Teleop:"),_teleop);    
     //Drone teleoperation
+    connect(this,SIGNAL(isConnectedChanged(bool)),_teleop,SLOT(setEnabled(bool)));
     connect(_teleop,SIGNAL(pageUpPressed()),this,SLOT(droneUp()));
     connect(_teleop,SIGNAL(pageDownPressed()),this,SLOT(droneDown()));
     connect(_teleop,SIGNAL(upPressed()),this,SLOT(droneForward()));
     connect(_teleop,SIGNAL(downPressed()),this,SLOT(droneBackward()));
     connect(_teleop,SIGNAL(leftPressed()),this,SLOT(droneLeft()));
     connect(_teleop,SIGNAL(rightPressed()),this,SLOT(droneRight()));
+    connect(_teleop,SIGNAL(homePressed()),this,SLOT(droneTakeOff()));
+    connect(_teleop,SIGNAL(endPressed()),this,SLOT(droneLand()));
+    connect(_teleop,SIGNAL(keyReleased()),this,SLOT(activateAutoHoverMode()));
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
@@ -199,6 +204,7 @@ void MainWindow::connectWithDrone()
 {
     ros::NodeHandle nh = getNodeHandle();
     ROS_DEBUG("@connect with drone");
+    /*Subscribers*/
     ros::Subscriber droneNavDataSub = nh.subscribe("/ardrone/navdata",1,&MainWindow::navDataCallback,this);
     ROS_DEBUG("Subbed to navdata");
     ros::Subscriber testSub = nh.subscribe("/test",1,&MainWindow::testCallback,this);
@@ -209,6 +215,9 @@ void MainWindow::connectWithDrone()
     _itSub = new image_transport::Subscriber(it.subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this));
     ROS_DEBUG("Subbed to the camera");    
     _itSubRescuer = new image_transport::Subscriber(it.subscribe("/kinect/rgb/image_raw",1,&MainWindow::cameraRescuerCallback,this));
+    /*Publishers*/
+    _cmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1));
+    _pubs.append(*_cmdVelPub);
     setIsConnected(true);
     log("Drone connected.");
 }
@@ -275,62 +284,60 @@ void MainWindow::droneUp()
 {
     ROS_DEBUG("Drone up");
     log("up");
-    ros::Publisher cmdVel = getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1);
     geometry_msgs::Twist cmd;
     cmd.linear.z = _defaultSpeed;
-    cmdVel.publish(cmd);
-    ros::spinOnce();
+    _cmdVelPub->publish(cmd);
+    ros::spinOnce();    
 }
 
 void MainWindow::droneDown()
 {
     ROS_DEBUG("Drone down");
     log("down");
-    ros::Publisher cmdVel = getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1);
     geometry_msgs::Twist cmd;
     cmd.linear.z = -_defaultSpeed;
-    cmdVel.publish(cmd);
-    ros::spinOnce();
+    _cmdVelPub->publish(cmd);
+    ros::spinOnce();    
 }
 
 void MainWindow::droneForward()
 {
     ROS_DEBUG("Drone forward");
     log("Drone forward");
-    ros::Publisher cmdVel = getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1);
     geometry_msgs::Twist cmd;
     cmd.linear.x = _defaultSpeed;
-    cmdVel.publish(cmd);
+    _cmdVelPub->publish(cmd);
+    ros::spinOnce();
 }
 
 void MainWindow::droneBackward()
 {
     ROS_DEBUG("Drone backward");
     log("Drone backward");
-    ros::Publisher cmdVel = getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1);
     geometry_msgs::Twist cmd;
     cmd.linear.x = -_defaultSpeed;
-    cmdVel.publish(cmd);
+    _cmdVelPub->publish(cmd);
+    ros::spinOnce();
 }
 
 void MainWindow::droneLeft()
 {
     ROS_DEBUG("Drone left");
     log("Drone left");
-    ros::Publisher cmdVel = getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1);
     geometry_msgs::Twist cmd;
     cmd.angular.z = _defaultSpeed;
-    cmdVel.publish(cmd);
+    _cmdVelPub->publish(cmd);
+    ros::spinOnce();
 }
 
 void MainWindow::droneRight()
 {
     ROS_DEBUG("Drone right");
-    log("Drone right");
-    ros::Publisher cmdVel = getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1);
+    log("Drone right");    
     geometry_msgs::Twist cmd;
     cmd.angular.z = -_defaultSpeed;
-    cmdVel.publish(cmd);
+    _cmdVelPub->publish(cmd);
+    ros::spinOnce();
 }
 
 void MainWindow::setIsConnected(bool arg)

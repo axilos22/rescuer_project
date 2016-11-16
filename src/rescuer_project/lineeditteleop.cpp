@@ -25,7 +25,22 @@ void LineEditTeleop::keyPressEvent(QKeyEvent *event)
     case Qt::Key_Right:
         emit rightPressed();
         break;
+    case Qt::Key_Space:
+        emit spacePressed();
+        break;
+    case Qt::Key_Home:
+        emit homePressed();
+        break;
+    case Qt::Key_End:
+        emit endPressed();
+        break;
     default:
         break;
     }
+}
+
+void LineEditTeleop::keyReleaseEvent(QKeyEvent *event)
+{
+    Q_UNUSED(event);
+    emit keyReleased();
 }
