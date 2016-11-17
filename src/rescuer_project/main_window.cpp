@@ -224,7 +224,19 @@ void MainWindow::connectWithDrone()
 
 void MainWindow::updateRotValues(QVector<float> rotV)
 {
-    QString displayed = "["+QString::number(rotV.at(0))+","+QString::number(rotV.at(1))+","+QString::number(rotV.at(2))+"]";
+    float x = rotV.at(0);
+    if(abs(x)<0.1){
+        x=0.0;
+    };
+    float y = rotV.at(1);
+    if(abs(y)<0.1){
+        y=0.0;
+    };
+    float z = rotV.at(2);
+    if(abs(z)<0.1){
+        z=0.0;
+    };
+    QString displayed = "["+QString::number(x,'f',2)+","+QString::number(y,'f',2)+","+QString::number(z,'f',2)+"]";
     QLineEdit* rotLe = _ui.rotXYZLineEdit;
     rotLe->clear();
     rotLe->setText(displayed);
@@ -245,7 +257,19 @@ void MainWindow::setDroneState(int arg)
 
 void MainWindow::updateVValues(const QVector<float> vel)
 {
-    QString displayed = format3Data(vel);
+    float x = vel.at(0);
+    if(abs(x)<0.1){
+        x=0.0;
+    };
+    float y = vel.at(1);
+    if(abs(y)<0.1){
+        y=0.0;
+    };
+    float z = vel.at(2);
+    if(abs(z)<0.1){
+        z=0.0;
+    };
+    QString displayed = "["+QString::number(x,'f',2)+","+QString::number(y,'f',2)+","+QString::number(z,'f',2)+"]";
     _ui.vXYZLineEdit->clear();
     _ui.vXYZLineEdit->setText(displayed);
 }

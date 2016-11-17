@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import roslib
+roslib.load_manifest('rescuer_project')
 import rospy
 from ardrone_autonomy.msg import Navdata
 from std_msgs.msg import String
