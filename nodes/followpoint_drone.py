@@ -17,13 +17,26 @@ if __name__ == '__main__':
    
     command = rospy.Publisher('/tum_ardrone/com', String,queue_size=1)
 
-    command.publish("c autoInit 500 800 4000 0.5")
-    rospy.sleep(0.2)
+    rospy.sleep(2.0)
+    auto_start = String()
+    auto_start.data = "c start"
+    command.publish(auto_start)
+    rospy.sleep(2.0)
+    auto_start.data ="c autoInit 500 800"
+    command.publish(auto_start)    
+#==============================================================================
+#     command.publish("c setReference $POSE$")
+#     command.publish("c setMaxControl 0.1")
+#     command.publish("c setStayWithinDist 0.3")
+#     command.publish("c setStayTime 3")
+#     command.publish("c lockScaleFP")
+#==============================================================================
+    rospy.sleep(1.0)
 
     rate = rospy.Rate(0.5)
     while not rospy.is_shutdown():
 
-        br.sendTransform((0.0, 0.0, 1.0),
+        br.sendTransform((-0.3, 0.0, 1.0),
                      (0.0, 0.0, 0.0, 1.0),
                      rospy.Time.now(),
                      "track_frame",
