@@ -42,6 +42,10 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(this,SIGNAL(velDataUpdated(QVector<float>)),this,SLOT(updateVValues(QVector<float>)));
     connect(this,SIGNAL(altUpdated(int)),_ui.altSpinBox,SLOT(setValue(int)));
     connect(this,SIGNAL(tagCountUpdated(int)),_ui.tagCountSpinBox,SLOT(setValue(int)));
+
+    connect(this,SIGNAL(rescuerPoseUpdated(QVector<float>)),this,SLOT(updateRescuerPoseValues(QVector<float>)));
+    connect(_ui.goalButton,SIGNAL(pressed()),this,SLOT(setRescuerGoal()));
+
     //Adding teleoperator
     _teleop = new LineEditTeleop;
     _teleop->setEnabled(false);
@@ -214,12 +218,27 @@ void MainWindow::connectWithDrone()
     image_transport::ImageTransport it(nh);
     _itSub = new image_transport::Subscriber(it.subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this));
     ROS_DEBUG("Subbed to the camera");    
-    _itSubRescuer = new image_transport::Subscriber(it.subscribe("/kinect/rgb/image_raw",1,&MainWindow::cameraRescuerCallback,this));
+
+
+    /*Rescuer*/
+    _itSubRescuer = new image_transport::Subscriber(it.subscribe("/camera/rgb/image_raw",1,&MainWindow::cameraRescuerCallback,this));
+    ros::Subscriber rescuerPoseSub = nh.subscribe("/mobile_base/abs_pos",1,&MainWindow::rescuerPoseCallback,this);
+    _subs.append(rescuerPoseSub);
     /*Publishers*/
-    _cmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1));
+    _cmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/quadrotor/cmd_vel",1));
+    _baseGoalPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal",1));
     _pubs.append(*_cmdVelPub);
+    _pubs.append(*_baseGoalPub);
     setIsConnected(true);
     log("Drone connected.");
+}
+
+void MainWindow::updateRescuerPoseValues(QVector<float> pose)
+{
+    QString displayed = QString::number(pose.at(0),'f',2)+","+QString::number(pose.at(1),'f',2)+","+QString::number(pose.at(2),'f',2);
+    QLineEdit* rotLe = _ui.poseLineEdit;
+    rotLe->clear();
+    rotLe->setText(displayed);
 }
 
 void MainWindow::updateRotValues(QVector<float> rotV)
@@ -327,7 +346,7 @@ void MainWindow::droneDown()
 void MainWindow::droneForward()
 {
     ROS_DEBUG("Drone forward");
-//    log("Drone forward");
+    log("Drone forward");
     geometry_msgs::Twist cmd;
     cmd.linear.x = _defaultSpeed;
     _cmdVelPub->publish(cmd);
@@ -337,7 +356,7 @@ void MainWindow::droneForward()
 void MainWindow::droneBackward()
 {
     ROS_DEBUG("Drone backward");
-//    log("Drone backward");
+    log("Drone backward");
     geometry_msgs::Twist cmd;
     cmd.linear.x = -_defaultSpeed;
     _cmdVelPub->publish(cmd);
@@ -406,5 +425,36 @@ void MainWindow::navDataCallback(const ardrone_autonomy::Navdata &navData)
     emit altUpdated((int)navData.altd);
     emit tagCountUpdated((int)navData.tags_count);
 }
+
+/**
+ * @brief MainWindow::rescuerPoseCallback
+ * @param msg
+ * Note: this is a ROS callback: not possible to access Qt objects.
+ */
+void MainWindow::rescuerPoseCallback(const geometry_msgs::Pose2D &msg)
+{
+    QVector<float> pose;
+    pose<<msg.x<<msg.y <<msg.theta;
+    emit rescuerPoseUpdated(pose);
+}
+
+void MainWindow::setRescuerGoal()
+{
+    QLineEdit* goalLe = _ui.goalLineEdit;
+    QString values = goalLe->text();
+    geometry_msgs::PoseStamped cmd;
+    cmd.header.frame_id = "/map";
+    cmd.header.stamp = ros::Time::now();
+    cmd.pose.position.x = 2.5;
+    cmd.pose.position.y = 0.0;
+    cmd.pose.position.z = 0.0;
+    cmd.pose.orientation.x = 0.0;
+    cmd.pose.orientation.y = 0.0;
+    cmd.pose.orientation.z = 0.0;
+    cmd.pose.orientation.w = 1.0;
+    _baseGoalPub->publish(cmd);
+    ros::spinOnce();
+}
+
 } // namespace
 PLUGINLIB_EXPORT_CLASS(rescuer_project::MainWindow,rqt_gui_cpp::Plugin)

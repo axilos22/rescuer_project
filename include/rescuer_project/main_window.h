@@ -34,6 +34,9 @@
 #include <ardrone_autonomy/Navdata.h>
 #include <ardrone_autonomy/CamSelect.h>
 #include <ardrone_autonomy/CamSelectRequest.h>
+/*Rescuer*/
+#include <geometry_msgs/Pose2D.h>
+#include <geometry_msgs/PoseStamped.h>
 /*own*/
 #include <ui_main_window.h>
 #include <rescuer_project/lineeditteleop.h>
@@ -73,6 +76,8 @@ public slots:
     void droneRight();
     void setIsConnected(bool arg);
     void droneReset();
+    void updateRescuerPoseValues(QVector<float> rotV);
+    void setRescuerGoal();
 
 signals:
     void batteryUpdated(int percent);
@@ -84,6 +89,7 @@ signals:
     void altUpdated(int alt);
     void tagCountUpdated(int tc);
     void isConnectedChanged(bool arg);
+    void rescuerPoseUpdated(QVector<float>);
 
 protected:
     QWidget* _centralWidget;
@@ -96,6 +102,9 @@ protected:
     ros::Subscriber _droneNavDataSub, _testSub;
     QVector<ros::Publisher> _pubs;    
     ros::Publisher* _cmdVelPub;
+
+    ros::Publisher* _baseGoalPub;
+
     //cam
     cv::Mat _conversionMat;
     image_transport::Subscriber* _itSub;
@@ -108,6 +117,9 @@ protected:
     void testCallback(const std_msgs::String::ConstPtr& msg);
     void cameraCallback(const sensor_msgs::ImageConstPtr &msg);
     void cameraRescuerCallback(const sensor_msgs::ImageConstPtr &msg);
+
+    void rescuerPoseCallback(const geometry_msgs::Pose2D &msg);
+
 private:
     float _defaultSpeed;
     bool m_isConnected;

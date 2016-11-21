@@ -49,61 +49,29 @@
              <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
             </property>
             <item row="0" column="0">
-             <widget class="QLabel" name="xLabel">
+             <widget class="QLabel" name="poseLabel">
               <property name="text">
-               <string>x =</string>
+               <string>Pose [x, y, th]</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QDoubleSpinBox" name="xDoubleSpinBox">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
+             <widget class="QLineEdit" name="poseLineEdit"/>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="yLabel">
+             <widget class="QLabel" name="goalLabel">
               <property name="text">
-               <string>y=</string>
+               <string>Goal [x, y, th]</string>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QDoubleSpinBox" name="yDoubleSpinBox">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="zLabel">
-              <property name="text">
-               <string>z=</string>
-              </property>
-             </widget>
+             <widget class="QLineEdit" name="goalLineEdit"/>
             </item>
             <item row="2" column="1">
-             <widget class="QDoubleSpinBox" name="zDoubleSpinBox">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="headingLabel">
+             <widget class="QPushButton" name="goalButton">
               <property name="text">
-               <string>heading</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QDoubleSpinBox" name="headingDoubleSpinBox">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
+               <string>Set goal</string>
               </property>
              </widget>
             </item>
