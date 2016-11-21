@@ -104,8 +104,8 @@ protected:
     ros::Subscriber _droneNavDataSub, _testSub;
     QVector<ros::Publisher> _pubs;    
     ros::Publisher* _cmdVelPub;
-
     ros::Publisher* _baseGoalPub;
+    ros::Publisher* _autoPilotPub;
 
     //cam
     cv::Mat _conversionMat;
@@ -119,11 +119,10 @@ protected:
     void testCallback(const std_msgs::String::ConstPtr& msg);
     void cameraCallback(const sensor_msgs::ImageConstPtr &msg);
     void cameraRescuerCallback(const sensor_msgs::ImageConstPtr &msg);
-
     void rescuerPoseCallback(const geometry_msgs::Pose2D &msg);
 
 private:
-    float _defaultSpeed;
+    float m_defaultSpeed;
     bool m_isConnected;
     int m_droneState;
 };

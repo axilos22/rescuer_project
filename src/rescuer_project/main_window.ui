@@ -266,7 +266,14 @@
              </widget>
             </item>
             <item row="5" column="1">
-             <widget class="QLineEdit" name="goToLineEdit"/>
+             <widget class="QLineEdit" name="goToLineEdit">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="locale">
+               <locale language="C" country="AnyCountry"/>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -275,6 +282,16 @@
        </item>
        <item>
         <layout class="QGridLayout" name="droneCmdGridLayout">
+         <item row="2" column="1">
+          <widget class="QPushButton" name="flatTrimButton">
+           <property name="toolTip">
+            <string>request to AR-Drone to re-calibrate its rotation estimates assuming that it is on a flat surface.</string>
+           </property>
+           <property name="text">
+            <string>Flat Trim</string>
+           </property>
+          </widget>
+         </item>
          <item row="1" column="1">
           <widget class="QPushButton" name="switchCamPushButton">
            <property name="text">
@@ -303,13 +320,17 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
-          <widget class="QPushButton" name="flatTrimButton">
-           <property name="toolTip">
-            <string>request to AR-Drone to re-calibrate its rotation estimates assuming that it is on a flat surface.</string>
-           </property>
+         <item row="3" column="1">
+          <widget class="QPushButton" name="goToButton">
            <property name="text">
-            <string>Flat Trim</string>
+            <string>GoTo</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QPushButton" name="resetButton">
+           <property name="text">
+            <string>Reset</string>
            </property>
           </widget>
          </item>
@@ -323,17 +344,10 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
-          <widget class="QPushButton" name="resetButton">
+         <item row="4" column="0">
+          <widget class="QCheckBox" name="autoPilotcheckBox">
            <property name="text">
-            <string>Reset</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QPushButton" name="goToButton">
-           <property name="text">
-            <string>GoTo</string>
+            <string>auto-pilot</string>
            </property>
           </widget>
          </item>

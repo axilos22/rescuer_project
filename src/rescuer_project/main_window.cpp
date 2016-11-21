@@ -6,7 +6,7 @@ namespace rescuer_project {
 
 MainWindow::MainWindow():rqt_gui_cpp::Plugin(),
     _centralWidget(0),
-    _defaultSpeed(.2),
+    m_defaultSpeed(.45),
     m_isConnected(false),
     m_droneState(0)
 {
@@ -54,8 +54,7 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     _teleop = new LineEditTeleop;
     _teleop->setEnabled(false);
     _ui.formLayout->addRow(tr("&Teleop:"),_teleop);    
-    //Drone teleoperation
-    connect(this,SIGNAL(isConnectedChanged(bool)),_teleop,SLOT(setEnabled(bool)));
+    //Drone teleoperation    
     connect(_teleop,SIGNAL(pageUpPressed()),this,SLOT(droneUp()));
     connect(_teleop,SIGNAL(pageDownPressed()),this,SLOT(droneDown()));
     connect(_teleop,SIGNAL(upPressed()),this,SLOT(droneForward()));
@@ -64,7 +63,11 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(_teleop,SIGNAL(rightPressed()),this,SLOT(droneRight()));
     connect(_teleop,SIGNAL(homePressed()),this,SLOT(droneTakeOff()));
     connect(_teleop,SIGNAL(endPressed()),this,SLOT(droneLand()));
-    connect(_teleop,SIGNAL(keyReleased()),this,SLOT(activateAutoHoverMode()));
+    connect(_teleop,SIGNAL(spacePressed()),this,SLOT(activateAutoHoverMode()));
+//    connect(_teleop,SIGNAL(keyReleased()),this,SLOT(activateAutoHoverMode()));
+    //on connection
+    connect(this,SIGNAL(isConnectedChanged(bool)),_teleop,SLOT(setEnabled(bool)));
+    connect(this,SIGNAL(isConnectedChanged(bool)),_ui.goToLineEdit,SLOT(setEnabled(bool)));
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
@@ -163,18 +166,15 @@ QVector<float> MainWindow::formatStringData(const QString inData, const QChar se
 {
     QVector<float> outData(3,0);
     if(!inData.contains(separator)) {
-        qWarning("Wrong formatting provided (no separator found)");
+        log("Wrong formatting provided (no separator found)");
         return outData;
     }
-    QStringList nbList;
-    nbList = inData.split(QRegExp(separator));
-    for(int i=0;i<nbList.size();i++) {
+    outData.clear();
+    QStringList nbList= inData.split(QRegExp(separator));
+    for(int i=0;i<nbList.size();i++) {        
         float nb = nbList.at(i).toFloat();
         outData.push_front(nb);
-    }
-    for(int i=0;i<nbList.size();i++) {
-        log(QString::number(outData.at(i)));
-    }
+    }    
     return outData;
 }
 
@@ -250,8 +250,16 @@ void MainWindow::connectWithDrone()
     /*Publishers*/
     _cmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/quadrotor/cmd_vel",1));
     _baseGoalPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal",1));
+    _autoPilotPub = new ros::Publisher(getNodeHandle().advertise<std_msgs::String>("/tum_ardrone/com",1));
     _pubs.append(*_cmdVelPub);
     _pubs.append(*_baseGoalPub);
+    _pubs.append(*_autoPilotPub);
+    /*setup autopilot*/
+    std_msgs::String setupMsg;
+    setupMsg.data = "c start";
+    _autoPilotPub->publish(setupMsg);
+    setupMsg.data = "c autoInit 500 800";
+    _autoPilotPub->publish(setupMsg);
     setIsConnected(true);
     log("Drone connected.");
 }
@@ -348,60 +356,56 @@ void MainWindow::activateAutoHoverMode()
 
 void MainWindow::droneUp()
 {
-    ROS_DEBUG("Drone up");
-//    log("up");
+    log("Drone up");
     geometry_msgs::Twist cmd;
-    cmd.linear.z = _defaultSpeed;
+    cmd.linear.z = m_defaultSpeed;
     _cmdVelPub->publish(cmd);
     ros::spinOnce();    
 }
 
 void MainWindow::droneDown()
 {
-    ROS_DEBUG("Drone down");
-//    log("down");
+    log("Drone down");
     geometry_msgs::Twist cmd;
-    cmd.linear.z = -_defaultSpeed;
+    cmd.linear.z = -m_defaultSpeed;
     _cmdVelPub->publish(cmd);
     ros::spinOnce();    
 }
 
 void MainWindow::droneForward()
 {
-    ROS_DEBUG("Drone forward");
     log("Drone forward");
     geometry_msgs::Twist cmd;
-    cmd.linear.x = _defaultSpeed;
+    cmd.linear.x = m_defaultSpeed;
     _cmdVelPub->publish(cmd);
     ros::spinOnce();
 }
 
 void MainWindow::droneBackward()
 {
-    ROS_DEBUG("Drone backward");
     log("Drone backward");
     geometry_msgs::Twist cmd;
-    cmd.linear.x = -_defaultSpeed;
+    cmd.linear.x = -m_defaultSpeed;
     _cmdVelPub->publish(cmd);
     ros::spinOnce();
 }
 
 void MainWindow::droneLeft()
 {
-    ROS_DEBUG("Drone left");
-//    log("Drone left");
+    log("Drone left");
     geometry_msgs::Twist cmd;
-    cmd.angular.z = _defaultSpeed;
+//    cmd.angular.z = m_defaultSpeed;
+    cmd.linear.y = m_defaultSpeed;
     _cmdVelPub->publish(cmd);
     ros::spinOnce();
 }
 
 void MainWindow::droneRight()
 {
-    ROS_DEBUG("Drone right");
-//    log("Drone right");
+    log("Drone right");
     geometry_msgs::Twist cmd;
-    cmd.angular.z = -_defaultSpeed;
+//    cmd.angular.z = -m_defaultSpeed;
+    cmd.linear.y = -m_defaultSpeed;
     _cmdVelPub->publish(cmd);
     ros::spinOnce();
 }
@@ -481,7 +485,19 @@ void MainWindow::setRescuerGoal()
 
 void MainWindow::droneGoTo()
 {
-    formatStringData(_ui.goToLineEdit->text());
+    QVector<float> goal = formatStringData(_ui.goToLineEdit->text());
+    if(goal.size()!=4) {
+        log("Incorrect data provided. Expected 4 data, got "+QString::number(goal.size()));
+        return;
+    }
+    for(int i=0;i<goal.size();i++) {
+        log("goto "+QString::number(goal.at(i)));
+    }
+    std_msgs::String goOrder;
+    QString formattedOrder = "goto "+QString::number(goal.at(0))+" "+QString::number(goal.at(1))+" "+QString::number(goal.at(2))+" "+QString::number(goal.at(3));
+    goOrder.data = formattedOrder.toStdString();
+    log(formattedOrder);
+    _autoPilotPub->publish(goOrder);
 }
 
 } // namespace
