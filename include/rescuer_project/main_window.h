@@ -56,6 +56,7 @@ public:
     void log(QString msg);
     int droneState() const;
     QString format3Data(const QVector<float> tab);
+    QVector<float> formatStringData(const QString inData,const QChar separator=',');
     bool isConnected() const;
 
 public slots:
@@ -78,6 +79,7 @@ public slots:
     void droneReset();
     void updateRescuerPoseValues(QVector<float> rotV);
     void setRescuerGoal();
+    void droneGoTo();
 
 signals:
     void batteryUpdated(int percent);

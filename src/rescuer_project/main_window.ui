@@ -258,6 +258,16 @@
               </property>
              </widget>
             </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="goToLabel">
+              <property name="text">
+               <string>GoTo[x,y,z,th]</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QLineEdit" name="goToLineEdit"/>
+            </item>
            </layout>
           </item>
          </layout>
@@ -317,6 +327,13 @@
           <widget class="QPushButton" name="resetButton">
            <property name="text">
             <string>Reset</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QPushButton" name="goToButton">
+           <property name="text">
+            <string>GoTo</string>
            </property>
           </widget>
          </item>

@@ -1,4 +1,7 @@
 #include "rescuer_project/main_window.h"
+#include <QChar>
+#include <QDebug>
+#include <QStringList>
 namespace rescuer_project {
 
 MainWindow::MainWindow():rqt_gui_cpp::Plugin(),
@@ -42,7 +45,8 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(this,SIGNAL(velDataUpdated(QVector<float>)),this,SLOT(updateVValues(QVector<float>)));
     connect(this,SIGNAL(altUpdated(int)),_ui.altSpinBox,SLOT(setValue(int)));
     connect(this,SIGNAL(tagCountUpdated(int)),_ui.tagCountSpinBox,SLOT(setValue(int)));
-
+    connect(_ui.goToButton,SIGNAL(pressed()),this,SLOT(droneGoTo()));
+    //rescuer
     connect(this,SIGNAL(rescuerPoseUpdated(QVector<float>)),this,SLOT(updateRescuerPoseValues(QVector<float>)));
     connect(_ui.goalButton,SIGNAL(pressed()),this,SLOT(setRescuerGoal()));
 
@@ -114,7 +118,7 @@ void MainWindow::cameraCallback(const sensor_msgs::ImageConstPtr &msg)
 
 void MainWindow::shutdownPlugin()
 {
-    //Unregister all publishers here
+    //Unregister all ROS publishers here
     for (int i = 0; i < _subs.size(); ++i) {
         _subs[i].shutdown();
     }
@@ -153,6 +157,25 @@ int MainWindow::droneState() const
 QString MainWindow::format3Data(const QVector<float> tab)
 {
     return "["+QString::number(tab.at(0))+","+QString::number(tab.at(1))+","+QString::number(tab.at(2))+"]";
+}
+
+QVector<float> MainWindow::formatStringData(const QString inData, const QChar separator)
+{
+    QVector<float> outData(3,0);
+    if(!inData.contains(separator)) {
+        qWarning("Wrong formatting provided (no separator found)");
+        return outData;
+    }
+    QStringList nbList;
+    nbList = inData.split(QRegExp(separator));
+    for(int i=0;i<nbList.size();i++) {
+        float nb = nbList.at(i).toFloat();
+        outData.push_front(nb);
+    }
+    for(int i=0;i<nbList.size();i++) {
+        log(QString::number(outData.at(i)));
+    }
+    return outData;
 }
 
 bool MainWindow::isConnected() const
@@ -311,7 +334,7 @@ void MainWindow::flatTrim()
 
 void MainWindow::activateAutoHoverMode()
 {
-    /*log("Auto-hover mode activated.");*/
+    log("Auto-hover mode activated.");
     ros::Publisher cmdVel = getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1);
     geometry_msgs::Twist cmd;
     cmd.linear.x=0;
@@ -454,6 +477,11 @@ void MainWindow::setRescuerGoal()
     cmd.pose.orientation.w = 1.0;
     _baseGoalPub->publish(cmd);
     ros::spinOnce();
+}
+
+void MainWindow::droneGoTo()
+{
+    formatStringData(_ui.goToLineEdit->text());
 }
 
 } // namespace
