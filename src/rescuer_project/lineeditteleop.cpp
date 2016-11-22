@@ -34,6 +34,23 @@ void LineEditTeleop::keyPressEvent(QKeyEvent *event)
     case Qt::Key_End:
         emit endPressed();
         break;
+    case Qt::Key_W:
+        emit wkeyPressed();
+        break;
+    case Qt::Key_X:
+        emit xkeyPressed();
+        break;
+    case Qt::Key_A:
+        emit akeyPressed();
+        break;
+    case Qt::Key_D:
+        emit dkeyPressed();
+        break;
+
+
+
+
+
     default:
         break;
     }

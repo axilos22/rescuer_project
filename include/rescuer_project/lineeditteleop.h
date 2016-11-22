@@ -22,6 +22,10 @@ signals:
     void homePressed();
     void endPressed();
     void keyReleased();
+    void wkeyPressed();
+    void xkeyPressed();
+    void akeyPressed();
+    void dkeyPressed();
 public slots:
 private:
 

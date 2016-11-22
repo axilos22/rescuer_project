@@ -82,6 +82,10 @@ public slots:
     void updateRescuerPoseValues(QVector<float> rotV);
     void setRescuerGoal();
     void droneGoTo();
+    void rescuerForward();
+    void rescuerBackward();
+    void rescuerTurnRight();
+    void rescuerTurnLeft();
 
 signals:
     void batteryUpdated(int percent);
@@ -108,6 +112,7 @@ protected:
     ros::Publisher* _cmdVelPub;
     ros::Publisher* _baseGoalPub;
     ros::Publisher* _autoPilotPub;
+    ros::Publisher* _baseCmdVelPub;
 
     //cam
     cv::Mat _conversionMat;
@@ -127,6 +132,8 @@ private:
     float m_defaultSpeed;
     bool m_isConnected;
     int m_droneState;
+    float rescuer_linearVel;
+    float rescuer_angularVel;
 };
 }//namespace
 #endif // MAINWINDOW_H
