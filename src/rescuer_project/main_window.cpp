@@ -6,7 +6,7 @@ namespace rescuer_project {
 
 MainWindow::MainWindow():rqt_gui_cpp::Plugin(),
     _centralWidget(0),
-    m_defaultSpeed(.45),
+    m_defaultSpeed(.3),
     m_isConnected(false),
     m_droneState(0)
 {
@@ -248,7 +248,11 @@ void MainWindow::connectWithDrone()
     ros::Subscriber rescuerPoseSub = nh.subscribe("/mobile_base/abs_pos",1,&MainWindow::rescuerPoseCallback,this);
     _subs.append(rescuerPoseSub);
     /*Publishers*/
+    #if SIMULATOR==1
     _cmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/quadrotor/cmd_vel",1));
+    #else
+    _cmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1));
+    #endif
     _baseGoalPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal",1));
     _autoPilotPub = new ros::Publisher(getNodeHandle().advertise<std_msgs::String>("/tum_ardrone/com",1));
     _pubs.append(*_cmdVelPub);
@@ -500,11 +504,8 @@ void MainWindow::droneGoTo()
         log("Incorrect data provided. Expected 4 data, got "+QString::number(goal.size()));
         return;
     }
-    for(int i=0;i<goal.size();i++) {
-        log("goto "+QString::number(goal.at(i)));
-    }
     std_msgs::String goOrder;
-    QString formattedOrder = "goto "+QString::number(goal.at(0))+" "+QString::number(goal.at(1))+" "+QString::number(goal.at(2))+" "+QString::number(goal.at(3));
+    QString formattedOrder = "c goto "+QString::number(goal.at(0))+" "+QString::number(goal.at(1))+" "+QString::number(goal.at(2))+" "+QString::number(goal.at(3));
     goOrder.data = formattedOrder.toStdString();
     log(formattedOrder);
     _autoPilotPub->publish(goOrder);

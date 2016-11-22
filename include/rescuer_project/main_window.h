@@ -41,6 +41,8 @@
 #include <ui_main_window.h>
 #include <rescuer_project/lineeditteleop.h>
 
+#define SIMULATOR 0
+
 namespace rescuer_project {
 
 class MainWindow : public rqt_gui_cpp::Plugin {
