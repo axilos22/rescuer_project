@@ -173,7 +173,7 @@ QVector<float> MainWindow::formatStringData(const QString inData, const QChar se
     QStringList nbList= inData.split(QRegExp(separator));
     for(int i=0;i<nbList.size();i++) {        
         float nb = nbList.at(i).toFloat();
-        outData.push_front(nb);
+        outData.push_back(nb);
     }    
     return outData;
 }
@@ -467,13 +467,21 @@ void MainWindow::rescuerPoseCallback(const geometry_msgs::Pose2D &msg)
 
 void MainWindow::setRescuerGoal()
 {
-    QLineEdit* goalLe = _ui.goalLineEdit;
-    QString values = goalLe->text();
+    QVector<float> goal = formatStringData(_ui.goalLineEdit->text());
+    if(goal.size()!=3) {
+        log("Incorrect data provided. Expected 3 data, got "+QString::number(goal.size()));
+        return;
+    }
+    for(int i=0;i<goal.size();i++) {
+        log("Goal at  "+QString::number(goal.at(i)));
+    }
+    QString formattedOrder = "goto "+QString::number(goal.at(0))+" "+QString::number(goal.at(1))+" "+QString::number(goal.at(2))+" "+QString::number(goal.at(3));
+    log(formattedOrder);
     geometry_msgs::PoseStamped cmd;
     cmd.header.frame_id = "/map";
     cmd.header.stamp = ros::Time::now();
-    cmd.pose.position.x = 2.5;
-    cmd.pose.position.y = 0.0;
+    cmd.pose.position.x = goal.at(0);
+    cmd.pose.position.y = goal.at(1);
     cmd.pose.position.z = 0.0;
     cmd.pose.orientation.x = 0.0;
     cmd.pose.orientation.y = 0.0;
@@ -481,6 +489,8 @@ void MainWindow::setRescuerGoal()
     cmd.pose.orientation.w = 1.0;
     _baseGoalPub->publish(cmd);
     ros::spinOnce();
+
+
 }
 
 void MainWindow::droneGoTo()
