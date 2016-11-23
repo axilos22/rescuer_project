@@ -205,153 +205,140 @@
             <item row="1" column="1">
              <widget class="QLineEdit" name="rotXYZLineEdit"/>
             </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="vXYZLabel">
-              <property name="text">
-               <string>v[x,y,z]</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="vXYZLineEdit"/>
-            </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="altLabel">
-              <property name="text">
-               <string>Alt</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QSpinBox" name="altSpinBox">
-              <property name="frame">
-               <bool>true</bool>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-              <property name="buttonSymbols">
-               <enum>QAbstractSpinBox::NoButtons</enum>
-              </property>
-              <property name="keyboardTracking">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="tagCountLabel">
-              <property name="text">
-               <string>tag Count</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QSpinBox" name="tagCountSpinBox">
-              <property name="toolTip">
-               <string>Number of tags detected.</string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-              <property name="buttonSymbols">
-               <enum>QAbstractSpinBox::NoButtons</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <widget class="QLabel" name="goToLabel">
-              <property name="text">
-               <string>GoTo[x,y,z,th]</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="1">
-             <widget class="QLineEdit" name="goToLineEdit">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="locale">
-               <locale language="C" country="AnyCountry"/>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
          </layout>
         </widget>
        </item>
        <item>
-        <layout class="QGridLayout" name="droneCmdGridLayout">
-         <item row="2" column="1">
-          <widget class="QPushButton" name="flatTrimButton">
-           <property name="toolTip">
-            <string>request to AR-Drone to re-calibrate its rotation estimates assuming that it is on a flat surface.</string>
-           </property>
-           <property name="text">
-            <string>Flat Trim</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QPushButton" name="switchCamPushButton">
-           <property name="text">
-            <string>SwitchCam</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QPushButton" name="droneLandButton">
-           <property name="text">
-            <string>Land</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QPushButton" name="droneTakeOffButton">
-           <property name="text">
-            <string>Take off</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QPushButton" name="connectButton">
-           <property name="text">
-            <string>Connect</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QPushButton" name="goToButton">
-           <property name="text">
-            <string>GoTo</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QPushButton" name="resetButton">
-           <property name="text">
-            <string>Reset</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QPushButton" name="autoHoverButton">
-           <property name="toolTip">
-            <string>Active auto-hover mode.</string>
-           </property>
-           <property name="text">
-            <string>Auto-hover mode</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QCheckBox" name="autoPilotcheckBox">
-           <property name="text">
-            <string>auto-pilot</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QGroupBox" name="droneControlGroupBox">
+         <property name="title">
+          <string>Drone commands</string>
+         </property>
+         <layout class="QGridLayout" name="droneCmdGridLayout">
+          <item row="1" column="0">
+           <widget class="QPushButton" name="connectButton">
+            <property name="text">
+             <string>Connect</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QPushButton" name="flatTrimButton">
+            <property name="toolTip">
+             <string>request to AR-Drone to re-calibrate its rotation estimates assuming that it is on a flat surface.</string>
+            </property>
+            <property name="text">
+             <string>Flat Trim</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QPushButton" name="switchCamPushButton">
+            <property name="text">
+             <string>SwitchCam</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="droneLandButton">
+            <property name="text">
+             <string>Land</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="droneTakeOffButton">
+            <property name="text">
+             <string>Take off</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QPushButton" name="resetButton">
+            <property name="text">
+             <string>Reset</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="autoHoverButton">
+            <property name="toolTip">
+             <string>Active auto-hover mode.</string>
+            </property>
+            <property name="text">
+             <string>Auto-hover mode</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="autopilotGroupBox">
+         <property name="title">
+          <string>Autopilot commands</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="goToLineEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="locale">
+             <locale language="C" country="AnyCountry"/>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QPushButton" name="rawCmdButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Execute</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="goToLabel">
+            <property name="text">
+             <string>GoTo[x,y,z,th]</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" colspan="2">
+           <widget class="QLineEdit" name="rawCmdLineEdit"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="rwCmdLabel">
+            <property name="text">
+             <string>Raw command text:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="goToButton">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>GoTo</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QCheckBox" name="autopilotCheckbox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>autopilot</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </item>

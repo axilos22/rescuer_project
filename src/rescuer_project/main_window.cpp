@@ -41,14 +41,10 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(_ui.resetButton,SIGNAL(pressed()),this,SLOT(droneReset()));
     connect(this,SIGNAL(batteryUpdated(int)),_ui.batteryProgressBar,SLOT(setValue(int)));
     connect(this,SIGNAL(rotDataUpdated(QVector<float>)),this,SLOT(updateRotValues(QVector<float>)));
-    connect(this,SIGNAL(camImgUpdated(QPixmap)),_ui.droneCamLabel,SLOT(setPixmap(QPixmap)));
-    connect(this,SIGNAL(camRescuerImgUpdated(QPixmap)),_ui.rescuerCamLabel,SLOT(setPixmap(QPixmap)));
+    connect(this,SIGNAL(camImgUpdated(QPixmap)),_ui.droneCamLabel,SLOT(setPixmap(QPixmap)));    
     connect(this,SIGNAL(droneStateChanged(int)),_ui.stateSpinBox,SLOT(setValue(int)));
-    connect(this,SIGNAL(velDataUpdated(QVector<float>)),this,SLOT(updateVValues(QVector<float>)));
-    connect(this,SIGNAL(altUpdated(int)),_ui.altSpinBox,SLOT(setValue(int)));
-    connect(this,SIGNAL(tagCountUpdated(int)),_ui.tagCountSpinBox,SLOT(setValue(int)));
-    connect(_ui.goToButton,SIGNAL(pressed()),this,SLOT(droneGoTo()));
     //rescuer
+    connect(this,SIGNAL(camRescuerImgUpdated(QPixmap)),_ui.rescuerCamLabel,SLOT(setPixmap(QPixmap)));
     connect(this,SIGNAL(rescuerPoseUpdated(QVector<float>)),this,SLOT(updateRescuerPoseValues(QVector<float>)));
     connect(_ui.goalButton,SIGNAL(pressed()),this,SLOT(setRescuerGoal()));
 
@@ -71,11 +67,18 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(_teleop,SIGNAL(xkeyPressed()),this,SLOT(rescuerBackward()));
     connect(_teleop,SIGNAL(dkeyPressed()),this,SLOT(rescuerTurnRight()));
     connect(_teleop,SIGNAL(akeyPressed()),this,SLOT(rescuerTurnLeft()));
+    //connect(_teleop,SIGNAL(keyReleased()),this,SLOT(activateAutoHoverMode()));
 
-//    connect(_teleop,SIGNAL(keyReleased()),this,SLOT(activateAutoHoverMode()));
     //on connection
     connect(this,SIGNAL(isConnectedChanged(bool)),_teleop,SLOT(setEnabled(bool)));
     connect(this,SIGNAL(isConnectedChanged(bool)),_ui.goToLineEdit,SLOT(setEnabled(bool)));
+    connect(this,SIGNAL(isConnectedChanged(bool)),_ui.goToButton,SLOT(setEnabled(bool)));
+    connect(this,SIGNAL(isConnectedChanged(bool)),_ui.rawCmdButton,SLOT(setEnabled(bool)));
+    connect(this,SIGNAL(isConnectedChanged(bool)),_ui.autopilotCheckbox,SLOT(setEnabled(bool)));
+    //autopilot connection
+    connect(_ui.goToButton,SIGNAL(pressed()),this,SLOT(autopilotGoTo()));
+    connect(_ui.rawCmdButton,SIGNAL(pressed()),this,SLOT(autopilotRawCmd()));
+    connect(_ui.autopilotCheckbox,SIGNAL(toggled(bool)),this,SLOT(autopilotActivated(bool)));
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
@@ -191,6 +194,16 @@ bool MainWindow::isConnected() const
     return m_isConnected;
 }
 
+void MainWindow::sendAutopilotCommand(const QString cmd)
+{
+    std_msgs::String commandOrder;
+    QString formattedOrder = "c "+cmd;
+    commandOrder.data = formattedOrder.toStdString();
+    log(formattedOrder);
+    _autoPilotPub->publish(commandOrder);
+    ros::spinOnce();
+}
+
 void MainWindow::droneTakeOff()
 {
     ROS_DEBUG("Drone has to take off now.");
@@ -266,13 +279,7 @@ void MainWindow::connectWithDrone()
     _autoPilotPub = new ros::Publisher(getNodeHandle().advertise<std_msgs::String>("/tum_ardrone/com",1));
     _pubs.append(*_cmdVelPub);
     _pubs.append(*_baseGoalPub);
-    _pubs.append(*_autoPilotPub);
-    /*setup autopilot*/
-    std_msgs::String setupMsg;
-    setupMsg.data = "c start";
-    _autoPilotPub->publish(setupMsg);
-    setupMsg.data = "c autoInit 500 800";
-    _autoPilotPub->publish(setupMsg);
+    _pubs.append(*_autoPilotPub);  
     setIsConnected(true);
     log("Drone connected.");
 }
@@ -288,17 +295,8 @@ void MainWindow::updateRescuerPoseValues(QVector<float> pose)
 void MainWindow::updateRotValues(QVector<float> rotV)
 {
     float x = rotV.at(0);
-    if(abs(x)<0.1){
-        x=0.0;
-    };
     float y = rotV.at(1);
-    if(abs(y)<0.1){
-        y=0.0;
-    };
     float z = rotV.at(2);
-    if(abs(z)<0.1){
-        z=0.0;
-    };
     QString displayed = "["+QString::number(x,'f',2)+","+QString::number(y,'f',2)+","+QString::number(z,'f',2)+"]";
     QLineEdit* rotLe = _ui.rotXYZLineEdit;
     rotLe->clear();
@@ -316,25 +314,6 @@ void MainWindow::setDroneState(int arg)
         myPal.setColor(QPalette::Base,Qt::red);
     }
     _ui.stateSpinBox->setPalette(myPal);
-}
-
-void MainWindow::updateVValues(const QVector<float> vel)
-{
-    float x = vel.at(0);
-    if(abs(x)<0.1){
-        x=0.0;
-    };
-    float y = vel.at(1);
-    if(abs(y)<0.1){
-        y=0.0;
-    };
-    float z = vel.at(2);
-    if(abs(z)<0.1){
-        z=0.0;
-    };
-    QString displayed = "["+QString::number(x,'f',2)+","+QString::number(y,'f',2)+","+QString::number(z,'f',2)+"]";
-    _ui.vXYZLineEdit->clear();
-    _ui.vXYZLineEdit->setText(displayed);
 }
 
 void MainWindow::swapCamera()
@@ -458,12 +437,7 @@ void MainWindow::navDataCallback(const ardrone_autonomy::Navdata &navData)
     rot<<navData.rotX<<navData.rotY <<navData.rotZ;
     emit rotDataUpdated(rot);
     u_int32_t state = navData.state;
-    setDroneState(state);
-    QVector<float> vel;
-    vel<<navData.vx<<navData.vy<<navData.vz;
-    emit velDataUpdated(vel);
-    emit altUpdated((int)navData.altd);
-    emit tagCountUpdated((int)navData.tags_count);
+    setDroneState(state);   
 }
 
 /**
@@ -502,22 +476,29 @@ void MainWindow::setRescuerGoal()
     cmd.pose.orientation.w = 1.0;
     _baseGoalPub->publish(cmd);
     ros::spinOnce();
-
-
 }
 
-void MainWindow::droneGoTo()
+void MainWindow::autopilotGoTo()
+{
+    autopilotClear();
+    QVector<float> goal = formatStringData(_ui.goToLineEdit->text());
+    if(goal.size()!=4) {
+        log("Incorrect data provided. Expected 4 data, got "+QString::number(goal.size()));
+        return;
+    }    
+    QString formattedOrder = "goto "+QString::number(goal.at(0))+" "+QString::number(goal.at(1))+" "+QString::number(goal.at(2))+" "+QString::number(goal.at(3));
+    sendAutopilotCommand(formattedOrder);
+}
+
+void MainWindow::autopilotGoToRel()
 {
     QVector<float> goal = formatStringData(_ui.goToLineEdit->text());
     if(goal.size()!=4) {
         log("Incorrect data provided. Expected 4 data, got "+QString::number(goal.size()));
         return;
     }
-    std_msgs::String goOrder;
-    QString formattedOrder = "c goto "+QString::number(goal.at(0))+" "+QString::number(goal.at(1))+" "+QString::number(goal.at(2))+" "+QString::number(goal.at(3));
-    goOrder.data = formattedOrder.toStdString();
-    log(formattedOrder);
-    _autoPilotPub->publish(goOrder);
+    QString formattedOrder = "moveByRel "+QString::number(goal.at(0))+" "+QString::number(goal.at(1))+" "+QString::number(goal.at(2))+" "+QString::number(goal.at(3));
+    sendAutopilotCommand(formattedOrder);
 }
 
 void MainWindow::rescuerForward()
@@ -551,6 +532,50 @@ void MainWindow::rescuerTurnLeft()
     cmd.angular.z = -rescuer_angularVel;
     _baseCmdVelPub->publish(cmd);
     ros::spinOnce();
+}
+
+void MainWindow::autopilotAutoInit()
+{
+    QString formattedOrder = "autoInit 500 800 4000 0.5";
+    sendAutopilotCommand(formattedOrder);
+}
+
+void MainWindow::autopilotTakeover()
+{
+    QString formattedOrder = "autoTakeover 500 800";
+    sendAutopilotCommand(formattedOrder);
+}
+
+void MainWindow::autopilotSetReference()
+{
+//    QString formattedOrder = "setReference 0.0 0.0 0.0 0.0";
+    QString formattedOrder = "setReference $POSE$";
+    sendAutopilotCommand(formattedOrder);
+}
+
+void MainWindow::autopilotClear()
+{
+    QString formattedOrder = "clearCommands";
+    sendAutopilotCommand(formattedOrder);
+}
+
+void MainWindow::autopilotRawCmd()
+{
+    QString formattedOrder = _ui.rawCmdLineEdit->text();
+    sendAutopilotCommand(formattedOrder);
+}
+
+void MainWindow::autopilotActivated(bool activation)
+{
+    QString cmd("start");
+    if(!activation) {
+        cmd="stop";
+    }
+    sendAutopilotCommand(cmd);
+    if(activation) {
+//        cmd="autoInit 500 800";
+//        sendAutopilotCommand(cmd);
+    }
 }
 
 } // namespace

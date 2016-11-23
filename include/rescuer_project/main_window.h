@@ -60,6 +60,7 @@ public:
     QString format3Data(const QVector<float> tab);
     QVector<float> formatStringData(const QString inData,const QChar separator=',');
     bool isConnected() const;
+    void sendAutopilotCommand(const QString cmd);
 
 public slots:
     void droneTakeOff();
@@ -67,7 +68,6 @@ public slots:
     void connectWithDrone();
     void updateRotValues(QVector<float> rotV);
     void setDroneState(int arg);
-    void updateVValues(const QVector<float> vel);
     void swapCamera();
     void flatTrim();
     void activateAutoHoverMode();
@@ -80,22 +80,27 @@ public slots:
     void setIsConnected(bool arg);
     void droneReset();
     void updateRescuerPoseValues(QVector<float> rotV);
-    void setRescuerGoal();
-    void droneGoTo();
+    void setRescuerGoal();    
     void rescuerForward();
     void rescuerBackward();
     void rescuerTurnRight();
     void rescuerTurnLeft();
+    /*autopilot*/
+    void autopilotGoTo();
+    void autopilotGoToRel();
+    void autopilotAutoInit();
+    void autopilotTakeover();
+    void autopilotSetReference();
+    void autopilotClear();
+    void autopilotRawCmd();
+    void autopilotActivated(bool activation);
 
 signals:
     void batteryUpdated(int percent);
-    void rotDataUpdated(QVector<float>);
-    void velDataUpdated(QVector<float>);
+    void rotDataUpdated(QVector<float>);    
     void camImgUpdated(QPixmap);
     void camRescuerImgUpdated(QPixmap);
-    void droneStateChanged(int arg);
-    void altUpdated(int alt);
-    void tagCountUpdated(int tc);
+    void droneStateChanged(int arg);        
     void isConnectedChanged(bool arg);
     void rescuerPoseUpdated(QVector<float>);
 
