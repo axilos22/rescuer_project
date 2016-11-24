@@ -26,8 +26,10 @@ if __name__ == '__main__':
     command.publish(auto_start)   
     auto_start.data = "c setStayWithinDist 0.2"
     command.publish(auto_start)
+    auto_start.data = "c setReference $POSE$"
+    command.publish(auto_start)
 #==============================================================================
-#     command.publish("c setReference $POSE$")
+#     
 #     command.publish("c setMaxControl 0.1")
 #     command.publish("c setStayTime 3")
 #     command.publish("c lockScaleFP")
@@ -53,7 +55,7 @@ if __name__ == '__main__':
         
         rospy.sleep(0.2)
         pose=String()
-        pose.data = "c goto {0} {1} {2} {3}".format(trans[1],trans[0],trans[2],y)
+        pose.data = "c goto {0} {1} {2} {3}".format(trans[1],trans[0],trans[2]-0.5,y)
         command.publish(pose)
 
         rate.sleep()

@@ -69,6 +69,7 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(_teleop,SIGNAL(dkeyPressed()),this,SLOT(rescuerTurnRight()));
     connect(_teleop,SIGNAL(akeyPressed()),this,SLOT(rescuerTurnLeft()));
     //connect(_teleop,SIGNAL(keyReleased()),this,SLOT(activateAutoHoverMode()));
+    connect(_teleop,SIGNAL(keyReleased()),this,SLOT(rescuerStop()));
 
     //on connection
     connect(this,SIGNAL(isConnectedChanged(bool)),_teleop,SLOT(setEnabled(bool)));
@@ -284,7 +285,8 @@ void MainWindow::connectWithDrone()
     _cmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1));
     #endif
     _baseGoalPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal",1));
-    _baseCmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/gwam/cmd_vel",1));
+    //_baseCmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/gwam/cmd_vel",1));
+    _baseCmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel_mux/input/teleop",1));
     _autoPilotPub = new ros::Publisher(getNodeHandle().advertise<std_msgs::String>("/tum_ardrone/com",1));
     _pubs.append(*_cmdVelPub);
     _pubs.append(*_baseGoalPub);
@@ -539,6 +541,13 @@ void MainWindow::rescuerTurnLeft()
     log("Rescuer turn left");
     geometry_msgs::Twist cmd;
     cmd.angular.z = -rescuer_angularVel;
+    _baseCmdVelPub->publish(cmd);
+    ros::spinOnce();
+}
+void MainWindow::rescuerStop()
+{
+    log("Rescuer stop");
+    geometry_msgs::Twist cmd;
     _baseCmdVelPub->publish(cmd);
     ros::spinOnce();
 }

@@ -41,7 +41,7 @@
 #include <ui_main_window.h>
 #include <rescuer_project/lineeditteleop.h>
 
-#define SIMULATOR 0
+#define SIMULATOR 1 //1 for quadrotor/cmd_vel
 
 namespace rescuer_project {
 
@@ -95,6 +95,7 @@ public slots:
     void autopilotClear();
     void autopilotRawCmd();
     void autopilotActivated(bool activation);
+    void rescuerStop();
 
 signals:
     void batteryUpdated(int percent);
