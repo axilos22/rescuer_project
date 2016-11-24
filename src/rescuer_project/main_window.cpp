@@ -81,6 +81,7 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(_ui.goToButton,SIGNAL(pressed()),this,SLOT(autopilotGoTo()));
     connect(_ui.rawCmdButton,SIGNAL(pressed()),this,SLOT(autopilotRawCmd()));
     connect(_ui.autopilotCheckbox,SIGNAL(toggled(bool)),this,SLOT(autopilotActivated(bool)));
+    connect(this,SIGNAL(autopilotUpdated(bool)),this,SLOT(changeTakeOffButton()));
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
@@ -542,6 +543,15 @@ void MainWindow::rescuerTurnLeft()
     ros::spinOnce();
 }
 
+void MainWindow::changeTakeOffButton()
+{
+    if(m_autopilotActivated){
+        _ui.droneTakeOffButton->setText("Take off-autopilot");
+    } else {
+        _ui.droneTakeOffButton->setText("Take off");
+    }
+}
+
 void MainWindow::autopilotAutoInit()
 {
     QString formattedOrder = "autoInit 500 800 4000 0.5";
@@ -580,7 +590,8 @@ void MainWindow::autopilotActivated(bool activation)
     if(!activation) {
         cmd="stop";
     }
-    sendAutopilotCommand(cmd);    
+    sendAutopilotCommand(cmd);
+    emit autopilotUpdated(activation);
 }
 
 } // namespace

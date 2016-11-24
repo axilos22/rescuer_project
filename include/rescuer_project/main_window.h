@@ -86,6 +86,7 @@ public slots:
     void rescuerTurnRight();
     void rescuerTurnLeft();
     /*autopilot*/
+    void changeTakeOffButton();
     void autopilotGoTo();
     void autopilotGoToRel();
     void autopilotAutoInit();
@@ -103,6 +104,7 @@ signals:
     void droneStateChanged(int arg);        
     void isConnectedChanged(bool arg);
     void rescuerPoseUpdated(QVector<float>);
+    void autopilotUpdated(bool autopilotActive);
 
 protected:
     QWidget* _centralWidget;
