@@ -139,6 +139,7 @@ private:
     int m_droneState;
     float rescuer_linearVel;
     float rescuer_angularVel;
+    bool m_autopilotActivated;
 };
 }//namespace
 #endif // MAINWINDOW_H

@@ -8,6 +8,7 @@ MainWindow::MainWindow():rqt_gui_cpp::Plugin(),
     _centralWidget(0),
     m_defaultSpeed(.3),
     m_isConnected(false),
+    m_autopilotActivated(false),
     m_droneState(0),
     rescuer_linearVel(0.4),
     rescuer_angularVel(0.5)
@@ -75,6 +76,7 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(this,SIGNAL(isConnectedChanged(bool)),_ui.goToButton,SLOT(setEnabled(bool)));
     connect(this,SIGNAL(isConnectedChanged(bool)),_ui.rawCmdButton,SLOT(setEnabled(bool)));
     connect(this,SIGNAL(isConnectedChanged(bool)),_ui.autopilotCheckbox,SLOT(setEnabled(bool)));
+    connect(this,SIGNAL(isConnectedChanged(bool)),_ui.droneTakeOffButton,SLOT(setEnabled(bool)));
     //autopilot connection
     connect(_ui.goToButton,SIGNAL(pressed()),this,SLOT(autopilotGoTo()));
     connect(_ui.rawCmdButton,SIGNAL(pressed()),this,SLOT(autopilotRawCmd()));
@@ -207,6 +209,12 @@ void MainWindow::sendAutopilotCommand(const QString cmd)
 void MainWindow::droneTakeOff()
 {
     ROS_DEBUG("Drone has to take off now.");
+    if(m_autopilotActivated) {
+        log("Autopilot taking off");
+        QString cmd="autoInit 500 800 4000 0.5";
+        sendAutopilotCommand(cmd);
+        return;
+    }
     log("Drone taking off.");
     std_msgs::Empty emptyMsg;
     ros::Publisher droneTakeOffPub = getNodeHandle().advertise<std_msgs::Empty>("/ardrone/takeoff",1);
@@ -567,15 +575,12 @@ void MainWindow::autopilotRawCmd()
 
 void MainWindow::autopilotActivated(bool activation)
 {
+    m_autopilotActivated = activation;
     QString cmd("start");
     if(!activation) {
         cmd="stop";
     }
-    sendAutopilotCommand(cmd);
-    if(activation) {
-//        cmd="autoInit 500 800";
-//        sendAutopilotCommand(cmd);
-    }
+    sendAutopilotCommand(cmd);    
 }
 
 } // namespace
