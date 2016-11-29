@@ -34,6 +34,8 @@
 #include <ardrone_autonomy/Navdata.h>
 #include <ardrone_autonomy/CamSelect.h>
 #include <ardrone_autonomy/CamSelectRequest.h>
+/*Tum Ardrone*/
+#include <tum_ardrone/filter_state.h>
 /*Rescuer*/
 #include <geometry_msgs/Pose2D.h>
 #include <geometry_msgs/PoseStamped.h>
@@ -57,7 +59,7 @@ public:
     virtual void restoreSettings(const qt_gui_cpp::Settings& plugin_settings, const qt_gui_cpp::Settings& instance_settings);
     void log(QString msg);
     int droneState() const;
-    QString format3Data(const QVector<float> tab);
+    QString format3Data(const QVector<float> tab, bool shortest=false);
     QVector<float> formatStringData(const QString inData,const QChar separator=',');
     bool isConnected() const;
     void sendAutopilotCommand(const QString cmd);
@@ -135,6 +137,7 @@ protected:
     void cameraCallback(const sensor_msgs::ImageConstPtr &msg);
     void cameraRescuerCallback(const sensor_msgs::ImageConstPtr &msg);
     void rescuerPoseCallback(const geometry_msgs::Pose2D &msg);
+    void autopilotFilterCallback(const tum_ardrone::filter_state &msg);
 
 private:
     float m_defaultSpeed;

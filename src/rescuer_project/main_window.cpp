@@ -172,9 +172,17 @@ int MainWindow::droneState() const
     return m_droneState;
 }
 
-QString MainWindow::format3Data(const QVector<float> tab)
+QString MainWindow::format3Data(const QVector<float> tab,bool shortest)
 {
-    return "["+QString::number(tab.at(0))+","+QString::number(tab.at(1))+","+QString::number(tab.at(2))+"]";
+    if(shortest) {
+        QString nb1 = QString::number(tab.at(0),'f',2);
+        QString nb2 = QString::number(tab.at(1),'f',2);
+        QString nb3 = QString::number(tab.at(2),'f',2);
+        QString out = QString("[%1,%2,%3]").arg(nb1,nb2,nb3);
+        return out;
+    } else {
+        return "["+QString::number(tab.at(0))+","+QString::number(tab.at(1))+","+QString::number(tab.at(2))+"]";
+    }
 }
 
 QVector<float> MainWindow::formatStringData(const QString inData, const QChar separator)
@@ -214,6 +222,16 @@ void MainWindow::droneTakeOff()
     if(m_autopilotActivated) {
         log("Autopilot taking off");
         QString cmd="autoInit 500 800 4000 0.5";
+        sendAutopilotCommand(cmd);
+        cmd="setReference $POSE$";
+        sendAutopilotCommand(cmd);
+//        cmd="setInitialReachDist 0.2";
+//        sendAutopilotCommand(cmd);
+//        cmd="setStayWithinDist 0.3";
+//        cmd="setStayTime 3";
+        cmd="lockScaleFP";
+        sendAutopilotCommand(cmd);
+        cmd="goto 0 0 0 0";
         sendAutopilotCommand(cmd);
         return;
     }
@@ -267,8 +285,11 @@ void MainWindow::connectWithDrone()
     ROS_DEBUG("Subbed to navdata");
     ros::Subscriber testSub = nh.subscribe("/test",1,&MainWindow::testCallback,this);
     ROS_DEBUG("Subbed to test sub");
+    ros::Subscriber filterStateSub=getNodeHandle().subscribe("/ardrone/predictedPose",1,&MainWindow::autopilotFilterCallback,this);
+    /*sub management*/
     _subs.append(droneNavDataSub);
     _subs.append(testSub);
+    _subs.append(filterStateSub);
     image_transport::ImageTransport it(nh);
     _itSub = new image_transport::Subscriber(it.subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this));
     ROS_DEBUG("Subbed to the camera");    
@@ -288,6 +309,7 @@ void MainWindow::connectWithDrone()
     //_baseCmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/gwam/cmd_vel",1));
     _baseCmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel_mux/input/teleop",1));
     _autoPilotPub = new ros::Publisher(getNodeHandle().advertise<std_msgs::String>("/tum_ardrone/com",1));
+    /*Pub management*/
     _pubs.append(*_cmdVelPub);
     _pubs.append(*_baseGoalPub);
     _pubs.append(*_autoPilotPub);  
@@ -461,6 +483,16 @@ void MainWindow::rescuerPoseCallback(const geometry_msgs::Pose2D &msg)
     QVector<float> pose;
     pose<<msg.x<<msg.y <<msg.theta;
     emit rescuerPoseUpdated(pose);
+}
+
+void MainWindow::autopilotFilterCallback(const tum_ardrone::filter_state &msg)
+{
+    QVector<float> state;
+    state.append(msg.x);
+    state.append(msg.y);
+    state.append(msg.z);
+    const QString display = format3Data(state,true);
+    _ui.PoselineEdit->setText(display);
 }
 
 void MainWindow::setRescuerGoal()
