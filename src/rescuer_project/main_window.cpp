@@ -10,7 +10,7 @@ MainWindow::MainWindow():rqt_gui_cpp::Plugin(),
     m_isConnected(false),
     m_autopilotActivated(false),
     m_droneState(0),
-    rescuer_linearVel(0.4),
+    rescuer_linearVel(0.2),
     rescuer_angularVel(0.5)
 {
     setObjectName("rescuer_gui");
@@ -66,10 +66,10 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
 
     connect(_teleop,SIGNAL(wkeyPressed()),this,SLOT(rescuerForward()));
     connect(_teleop,SIGNAL(xkeyPressed()),this,SLOT(rescuerBackward()));
-    connect(_teleop,SIGNAL(dkeyPressed()),this,SLOT(rescuerTurnRight()));
-    connect(_teleop,SIGNAL(akeyPressed()),this,SLOT(rescuerTurnLeft()));
+    connect(_teleop,SIGNAL(dkeyPressed()),this,SLOT(rescuerTurnLeft()));
+    connect(_teleop,SIGNAL(akeyPressed()),this,SLOT(rescuerTurnRight()));
     //connect(_teleop,SIGNAL(keyReleased()),this,SLOT(activateAutoHoverMode()));
-    connect(_teleop,SIGNAL(keyReleased()),this,SLOT(rescuerStop()));
+    connect(_teleop,SIGNAL(skeyPressed()),this,SLOT(rescuerStop()));
 
     //on connection
     connect(this,SIGNAL(isConnectedChanged(bool)),_teleop,SLOT(setEnabled(bool)));
@@ -305,8 +305,7 @@ void MainWindow::connectWithDrone()
     #else
     _cmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel",1));
     #endif
-    _baseGoalPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal",1));
-    //_baseCmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/gwam/cmd_vel",1));
+    _baseGoalPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal",1));   
     _baseCmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel_mux/input/teleop",1));
     _autoPilotPub = new ros::Publisher(getNodeHandle().advertise<std_msgs::String>("/tum_ardrone/com",1));
     /*Pub management*/
@@ -504,11 +503,9 @@ void MainWindow::setRescuerGoal()
     }
     for(int i=0;i<goal.size();i++) {
         log("Goal at  "+QString::number(goal.at(i)));
-    }
-    QString formattedOrder = "goto "+QString::number(goal.at(0))+" "+QString::number(goal.at(1))+" "+QString::number(goal.at(2))+" "+QString::number(goal.at(3));
-    log(formattedOrder);
-    geometry_msgs::PoseStamped cmd;
-    cmd.header.frame_id = "/map";
+    }    
+    geometry_msgs::PoseStamped cmd;    
+    cmd.header.frame_id = "/mobile_map";
     cmd.header.stamp = ros::Time::now();
     cmd.pose.position.x = goal.at(0);
     cmd.pose.position.y = goal.at(1);
@@ -546,7 +543,7 @@ void MainWindow::autopilotGoToRel()
 
 void MainWindow::rescuerForward()
 {
-    log("Rescuer forward");
+    //log("Rescuer forward");
     geometry_msgs::Twist cmd;
     cmd.linear.x = rescuer_linearVel;
     _baseCmdVelPub->publish(cmd);
@@ -554,7 +551,7 @@ void MainWindow::rescuerForward()
 }
 void MainWindow::rescuerBackward()
 {
-    log("Rescuer backward");
+    //log("Rescuer backward");
     geometry_msgs::Twist cmd;
     cmd.linear.x = -rescuer_linearVel;
     _baseCmdVelPub->publish(cmd);
@@ -562,7 +559,7 @@ void MainWindow::rescuerBackward()
 }
 void MainWindow::rescuerTurnRight()
 {
-    log("Rescuer turn right");
+    //log("Rescuer turn right");
     geometry_msgs::Twist cmd;
     cmd.angular.z = rescuer_angularVel;
     _baseCmdVelPub->publish(cmd);
@@ -570,7 +567,7 @@ void MainWindow::rescuerTurnRight()
 }
 void MainWindow::rescuerTurnLeft()
 {
-    log("Rescuer turn left");
+    //log("Rescuer turn left");
     geometry_msgs::Twist cmd;
     cmd.angular.z = -rescuer_angularVel;
     _baseCmdVelPub->publish(cmd);
@@ -578,7 +575,7 @@ void MainWindow::rescuerTurnLeft()
 }
 void MainWindow::rescuerStop()
 {
-    log("Rescuer stop");
+    //log("Rescuer stop");
     geometry_msgs::Twist cmd;
     _baseCmdVelPub->publish(cmd);
     ros::spinOnce();

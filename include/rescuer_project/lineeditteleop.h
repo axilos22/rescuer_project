@@ -26,6 +26,7 @@ signals:
     void xkeyPressed();
     void akeyPressed();
     void dkeyPressed();
+    void skeyPressed();
 public slots:
 private:
 

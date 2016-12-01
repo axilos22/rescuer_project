@@ -46,7 +46,9 @@ void LineEditTeleop::keyPressEvent(QKeyEvent *event)
     case Qt::Key_D:
         emit dkeyPressed();
         break;
-
+    case Qt::Key_S:
+        emit skeyPressed();
+        break;
 
 
 
