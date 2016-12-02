@@ -62,23 +62,43 @@ To deliver a fully applicable solution, a GUI (Graphical User Interface) had to 
 order to see what is the system doing in real time.
 
 
-\subsection{Tool used}
+\subsection{Tools used}
 \subsubsection{Git}
 To deliver a complete solution, a lot of software development was required. In order to keep
 the code maintained and keep track of changes in code; we used \href{https://git-scm.com/}{git} as a version control system
  (VCS).
+
 \subsubsection{ROS} \label{ROS}
 ROS stands for Robotic Operating System; ROS is not technically a OS but provides many abstraction for network communications among robots. As we require cooperation among our 
 system, ROS was a very useful tool.
+
+\subsubsection{Gmapping}
+The \href{http://wiki.ros.org/gmapping}{Gmapping} ROS package is an implementation of the Simultanous Localization and Mapping (SLAM) algorithm. It builds a grid map from a laser scan, and localizes the robot from odometry data and features extracted from the environment.
+
+\subsubsection{Navigation Stack}
+The \href{http://wiki.ros.org/navigation}{Navigation} ROS package enables a mobile robot to avoid obstacles in the environment based on sensor readings, make a plan to reach a goal and produces appropriate velocities to get there. It accomplishes this through two separate implementations. 
+
+First it builds a global costmap of the perceived environment, and builds a global plan from the current position to the goal based on Djisktra's algorithm, this part is platform independent. 
+
+Secondly it builds a local costmap, taking into account close obstacles and the global plan, and sends the command velocities to the platform. The local planner is  platform dependant, and has to be tuned for optimal performance.
+
+\subsubsection{Tum Ardrone}
+The \href{http://wiki.ros.org/tum_ardrone}{Tum Ardrone} ROS package provides a PID controller for the AR Drone, coupled with a state estimation implementation with Extended Kalman Filter (EKF) and Parallel Tracking and Mapping (PTAM).
+
+\subsubsection{Gazebo}
+Gazebo is a well known and widely used simulator with a robust physics engine. 
+Robot platforms like the TurtleBot and the AR Drone are already implemented, and new robots can be added using a SDF description. It also counts with different plugins  for robot, sensor, and environmental control. 
+
 \subsubsection{Qt}
 Qt is a well known GUI library. Is is used a large variety of applications from mobile phone interfaces to advanced customized programs. Qt is so popular that a module for ROS was
 created called rqt (ROS Qt).
+
 
 \subsection{Mobile base}
 The mobile base used is a TurtleBot. TurtleBot is a low-cost, personal robot kit with open-source software provided by different partners mostly for educational activities.
 Our mobile base was equipped with a Microsoft\textcopyright Kinect\texttrademark a cheap camera which is able to compute the depth of an image easily.
 
-\subsection{Quad-rotor}
+\subsection{Quadrotor}
 The quad-rotor used is a Parrot\textcopyright AR Drone 2\texttrademark it is a 4 propellers
 drone which has a ROS compatible driver. It is also equipped with two cameras: one in front
 and another in the bottom. The bottom camera can be used for visual tracking and the drone
@@ -91,6 +111,9 @@ the driver package: \href{"https://github.com/AutonomyLab/ardrone_autonomy"}
 \subsection{Cooperative behaviour}
 As the two robots have to cooperate to perform their common goal, it was required to implement
 cooperative behaviours on the system.
+
+
+
 
 \section{Work achieved}
 \subsection{GUI programming}
