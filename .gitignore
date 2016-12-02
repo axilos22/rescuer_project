@@ -46,5 +46,31 @@ qtcreator-*
 # Catkin custom files
 CATKIN_IGNORE
 
+#LATEX projects
+*.aux
+*.glo
+*.idx
+*.log
+*.toc
+*.ist
+*.acn
+*.acr
+*.alg
+*.bbl
+*.blg
+*.dvi
+*.glg
+*.gls
+*.ilg
+*.ind
+*.lof
+*.lot
+*.maf
+*.mtc
+*.mtc1
+*.out
+*.synctex.gz
+*.pdf
+
 #Ax ignore
 *.old
