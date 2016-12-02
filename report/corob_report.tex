@@ -1,0 +1,109 @@
+\documentclass[11pt,a4paper]{article}
+%PKG
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{textcomp}
+
+\begin{document}
+\pagestyle{plain}
+\author{Axel Jeanne \and Monica Arias Rivera}
+\title{Cooperative supervised mobile manipulator}
+\maketitle
+\begin{abstract}
+Robotic systems grew in complexity and diversity due to the increasing complexion of the task
+they are performing. As complexity increase, decoupling element into smaller simpler part is
+regularly done. As a part if this decoupling trend, cooperative robotics grant an even 
+larger change: using multiple robot to perform a single, yet complex, task.
+
+This report present the work performed during the Supervised Mobile Manipulator (SMM) project.
+The project consists in making a cooperative robotic system providing "smart" behaviour to
+make the tele-operation easier to the user while keeping effectiveness of the controlled robot 
+unchanged.
+
+For this project we used different hardware and software elements that we will introduce,
+then we will present different cooperative behaviours and will expose their strengths and weaknesses; finally we will present the chosen system and expose its features and the results we obtained.
+\end{abstract}
+\tableofcontents
+
+\section{Theoretical content}
+\subsection{Advantages of cooperative system}
+In most cases, the operator performing a task remotely only have a single point of view: the
+one of the embedded camera. In multiple different systems, it has been shown that this can
+lead to inconvenient situations where the operator is performing a task with a sub-optimal
+vision of the situation.
+
+One solution to this problem could be to add an animate vision system\cite{Ballard1991}
+but this kind of solution increase vastly complexity of the system since all the vision system
+has to be actuated. Another solution could be to increase the number of camera on the robot.
+This solution increase the robot payload and is actually not very convenient for the user
+since more video streams has now to be monitored while performing the task. The solution we chose is to add an external robot to provide a "supervisor" vision of the acting robot. This solution adds many different  advantages:
+
+\begin{enumerate}
+\item The supervisor can provide vision from different angles while the action robot is static
+\item The supervisor can scout ahead of the action robot to ensure safety
+\item The supervisor behaviours can be automated to unload the operator's attention
+\end{enumerate}
+
+
+\subsection{Problem statement}
+The Supervise Mobile Manipulator Project (SMM) goal is to develop a cooperative robotics
+system which can be used in hazardous areas. It uses two platforms: 
+
+\begin{itemize}
+\item An action platform which perform the physical operation
+\item An supervisor platform which keep an overview of the situation
+\end{itemize}
+
+To deliver a fully applicable solution, a GUI (Graphical User Interface) had to be provided in
+order to see what is the system doing in real time.
+
+
+\subsection{Tool used}
+\subsubsection{Git}
+To deliver a complete solution, a lot of software development was required. In order to keep
+the code maintained and keep track of changes in code; we used \href{https://git-scm.com/}{git} as a version control system
+ (VCS).
+\subsubsection{ROS} \label{ROS}
+ROS stands for Robotic Operating System; ROS is not technically a OS but provides many abstraction for network communications among robots. As we require cooperation among our 
+system, ROS was a very useful tool.
+\subsubsection{Qt}
+Qt is a well known GUI library. Is is used a large variety of applications from mobile phone interfaces to advanced customized programs. Qt is so popular that a module for ROS was
+created called rqt (ROS Qt).
+
+\subsection{Mobile base}
+The mobile base used is a TurtleBot. TurtleBot is a low-cost, personal robot kit with open-source software provided by different partners mostly for educational activities.
+Our mobile base was equipped with a Microsoft\textcopyright Kinect\texttrademark a cheap camera which is able to compute the depth of an image easily.
+
+\subsection{Quad-rotor}
+The quad-rotor used is a Parrot\textcopyright AR Drone 2\texttrademark it is a 4 propellers
+drone which has a ROS compatible driver. It is also equipped with two cameras: one in front
+and another in the bottom. The bottom camera can be used for visual tracking and the drone
+has an on-board tracking system, allowing a decent tracking without latency issues.
+Additionally, some ROS libraries have been created to be compatible with the drone; we used
+one of them called \href{"http://wiki.ros.org/tum_ardrone"}{"tum\_ardrone"} in parallel with
+the driver package: \href{"https://github.com/AutonomyLab/ardrone_autonomy"}
+{"ardrone\_autonomy"}.
+
+\subsection{Cooperative behaviour}
+As the two robots have to cooperate to perform their common goal, it was required to implement
+cooperative behaviours on the system.
+
+\section{Work achieved}
+\subsection{GUI programming}
+\subsection{Robots interactions}
+\subsection{Simulator implementation}
+\subsection{Testing and first results}
+
+\section{Result analysis and conclusions}
+\subsection{Final results analysis}
+\subsection{Improvement and future work}
+\subsection{Conclusion}
+
+
+\bibliography{bib}
+\bibliographystyle{abbrv}
+\end{document}
