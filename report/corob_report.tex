@@ -7,8 +7,10 @@
 \usepackage{amssymb}
 \usepackage{hyperref}
 \usepackage{textcomp}
+\usepackage{graphicx}
 
 \begin{document}
+\graphicspath{{media/}}
 \pagestyle{plain}
 \author{Axel Jeanne \and Monica Arias Rivera}
 \title{Cooperative supervised mobile manipulator}
@@ -98,14 +100,26 @@ created called rqt (ROS Qt).
 
 
 \subsection{Mobile base}
-The mobile base used is a TurtleBot. TurtleBot is a low-cost, personal robot kit with open-source software provided by different partners mostly for educational activities.
-Our mobile base was equipped with a Microsoft\textcopyright Kinect\texttrademark : a cheap camera which is able to compute the depth of an image easily.
+\begin{center}
+Image here
+%\includegraphics{turtlebot.png}
+\end{center}
+The mobile base used is a TurtleBot. TurtleBot is a low-cost, personal robot kit with open-source software
+provided by different partners mostly for educational activities.
+Our mobile base was equipped with a Microsoft\textcopyright Kinect\texttrademark : a cheap camera which is
+able to compute the depth of an image easily. Having such information is very interesting for navigation
+purpose since the relative distance to object is easily accessible.
 
 \subsection{Quadrotor}
-The quad-rotor used is a Parrot\textcopyright AR Drone 2\texttrademark it is a 4 propellers
+\begin{center}
+Image here
+%\includegraphics{ar_drone_gps_edition.png}
+\end{center}
+The quad-rotor used is a Parrot\textcopyright AR Drone v2\texttrademark it is a 4 propellers
 drone which has a ROS compatible driver. It is also equipped with two cameras: one in front
 and another in the bottom. The bottom camera can be used for visual tracking and the drone
 has an on-board tracking system, allowing a decent tracking without latency issues.
+
 Additionally, some ROS libraries have been created to be compatible with the drone; we used
 one of them called \href{"http://wiki.ros.org/tum_ardrone"}{"tum\_ardrone"} in parallel with
 the driver package: \href{"https://github.com/AutonomyLab/ardrone_autonomy"}
@@ -113,13 +127,47 @@ the driver package: \href{"https://github.com/AutonomyLab/ardrone_autonomy"}
 
 \subsection{Cooperative behaviour}
 As the two robots have to cooperate to perform their common goal, it was required to implement
-cooperative behaviours on the system.
+cooperative behaviors on the system. During the conceptualization of the project we established different
+cooperative behaviors that the system should be able to manage:
 
+%\begin{itemize}
+%\item Default mode
+%\item Coupled mode
+%\item Decoupled mode
+%\item Assistance mode
+%\end{itemize}
 
+\subsubsection{Default mode}
+The default mode is the one in which the system start. No particular behavior is expected but the two
+robots should establish connection and start exchanging their respective localization and status data.
+
+\subsubsection{Coupled mode}
+In this mode, the navigation of the two robots is linked, the mobile-base robot has asked the drone to 
+rally on top of its position and the drone is tracking the mobile base underneath. From this point if the mobile base moves, the drone remains on top of it and move along.
+
+\subsubsection{Decoupled mode}
+This mode is the same as default mode in terms of behaviour. The only difference is that the default mode
+is not accessed anymore after start-up. The system will enter the decoupled mode. The two robots movements
+are decoupled and can be separately controlled, either by tele-operation or any other method.
+
+\subsubsection{Assistance mode}
+The assistance mode is a semi-operated mode. In this mode, the drone will adopt a set of pre-defined
+positions around the mobile base. For instance in the case of navigation, the drone will move among a semi-circle (or full circle) behind (around) the mobile platform, allowing the operator to have a better awareness of the situation.
+\begin{center}
+Image here
+%\includegraphics{assistanceBahavior.png}
+\end{center}
+Additional behaviors can be added into the assistance mode to be even more effective, for instance
+adopting a lateral camera position while the robot is grasping an object. This would allows the operator
+to have a real-time visual feedback on its action. Another behavior could be "forward scouting" allowing the drone to explore the area before engaging the mobile base.
 
 
 \section{Work achieved}
+
 \subsection{GUI programming}
+Programming the GUI was facilitated by the rqt package. Setting up the interface was, however, a complicated task since the tutorial of rqt is not exactly finished and omitted crucial setup details.
+
+Once the first test widget were operational, the development of the could start.
 \subsection{Robots interactions}
 \subsection{Simulator implementation}
 \subsection{Testing and first results}
