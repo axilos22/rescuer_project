@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   cv_bridge
   ardrone_autonomy
+  tf
 )
 find_package(OpenCV REQUIRED)
 

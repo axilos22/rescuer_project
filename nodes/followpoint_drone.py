@@ -17,17 +17,17 @@ if __name__ == '__main__':
    
     command = rospy.Publisher('/tum_ardrone/com', String,queue_size=1)
 
-    rospy.sleep(2.0)
+    rospy.sleep(0.5)
     auto_start = String()
     auto_start.data = "c start"
     command.publish(auto_start)
-    rospy.sleep(2.0)
-    auto_start.data ="c autoInit 500 800"
-    command.publish(auto_start)   
-    auto_start.data = "c setStayWithinDist 0.2"
-    command.publish(auto_start)
-    auto_start.data = "c setReference $POSE$"
-    command.publish(auto_start)
+    rospy.sleep(0.5)
+    #auto_start.data ="c autoInit 500 800"
+    #command.publish(auto_start)   
+    #auto_start.data = "c setStayWithinDist 0.2"
+    #command.publish(auto_start)
+    #auto_start.data = "c setReference $POSE$"
+    #command.publish(auto_start)
 #==============================================================================
 #     
 #     command.publish("c setMaxControl 0.1")
@@ -46,7 +46,7 @@ if __name__ == '__main__':
                      "base_footprint")
         rospy.sleep(0.2)
         try:
-            (trans,rot) = listener.lookupTransform('/map', '/track_frame', rospy.Time(0))
+            (trans,rot) = listener.lookupTransform('/mobile_map', '/track_frame', rospy.Time(0))
             (r,p,y) =  tf.transformations.euler_from_quaternion([rot[0],rot[1],rot[2],rot[3]])
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             continue
@@ -55,7 +55,11 @@ if __name__ == '__main__':
         
         rospy.sleep(0.2)
         pose=String()
-        pose.data = "c goto {0} {1} {2} {3}".format(trans[1],trans[0],trans[2]-0.5,y)
+        #pose.data = "c goto {0} {1} {2} {3}".format(trans[0],trans[1],trans[2]-0.5,y)
+
+	#with turtlebot 1m offset in x and y	
+	pose.data = "c goto " + "{0:.2f}".format(-trans[1]-1)+ " {0:.2f}".format(trans[0]+1) + " {0:.2f}".format(trans[2]) + " {0:.2f}".format(y)
+	print("x= " +str(-trans[1]-1)+" y= " +str(trans[0]+1) + " z= " +str(trans[2])+" yaw= " +str(y))
         command.publish(pose)
 
         rate.sleep()

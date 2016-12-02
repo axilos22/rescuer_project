@@ -11,6 +11,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <float.h>
 #include <image_transport/image_transport.h>
+#include <tf/transform_datatypes.h>
 /*ROS-msg*/
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
@@ -19,6 +20,7 @@
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/image_encodings.h>
 #include <geometry_msgs/Twist.h>
+#include <move_base_msgs/MoveBaseActionResult.h>
 /*QT*/
 #include <QTextEdit>
 #include <QString>
@@ -138,6 +140,7 @@ protected:
     void cameraRescuerCallback(const sensor_msgs::ImageConstPtr &msg);
     void rescuerPoseCallback(const geometry_msgs::Pose2D &msg);
     void autopilotFilterCallback(const tum_ardrone::filter_state &msg);
+    void goalStatusCallback(const move_base_msgs::MoveBaseActionResult &msg);
 
 private:
     float m_defaultSpeed;

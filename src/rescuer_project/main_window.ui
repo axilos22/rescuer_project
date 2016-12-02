@@ -66,12 +66,36 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="goalLineEdit"/>
+             <widget class="QLineEdit" name="goalLineEdit">
+              <property name="text">
+               <string>0.0,0.0,0.0</string>
+              </property>
+             </widget>
             </item>
             <item row="2" column="1">
              <widget class="QPushButton" name="goalButton">
               <property name="text">
                <string>Set goal</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLineEdit" name="goalStatusLineEdit">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Not set</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="goalStatusLabel">
+              <property name="text">
+               <string>Goal Status</string>
               </property>
              </widget>
             </item>

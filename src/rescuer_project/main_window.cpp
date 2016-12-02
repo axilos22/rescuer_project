@@ -286,10 +286,15 @@ void MainWindow::connectWithDrone()
     ros::Subscriber testSub = nh.subscribe("/test",1,&MainWindow::testCallback,this);
     ROS_DEBUG("Subbed to test sub");
     ros::Subscriber filterStateSub=getNodeHandle().subscribe("/ardrone/predictedPose",1,&MainWindow::autopilotFilterCallback,this);
+
+    ros::Subscriber goalStatusSub = nh.subscribe("/move_base/result",1,&MainWindow::goalStatusCallback,this);
+    ROS_DEBUG("Subbed to goal status");
+
     /*sub management*/
     _subs.append(droneNavDataSub);
     _subs.append(testSub);
     _subs.append(filterStateSub);
+    _subs.append(goalStatusSub);
     image_transport::ImageTransport it(nh);
     _itSub = new image_transport::Subscriber(it.subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this));
     ROS_DEBUG("Subbed to the camera");    
@@ -500,21 +505,20 @@ void MainWindow::setRescuerGoal()
     if(goal.size()!=3) {
         log("Incorrect data provided. Expected 3 data, got "+QString::number(goal.size()));
         return;
-    }
-    for(int i=0;i<goal.size();i++) {
-        log("Goal at  "+QString::number(goal.at(i)));
-    }    
+    }  
     geometry_msgs::PoseStamped cmd;    
     cmd.header.frame_id = "/mobile_map";
     cmd.header.stamp = ros::Time::now();
     cmd.pose.position.x = goal.at(0);
     cmd.pose.position.y = goal.at(1);
     cmd.pose.position.z = 0.0;
-    cmd.pose.orientation.x = 0.0;
-    cmd.pose.orientation.y = 0.0;
-    cmd.pose.orientation.z = 0.0;
-    cmd.pose.orientation.w = 1.0;
+    tf::Quaternion quaternion = tf::createQuaternionFromYaw(goal.at(2));
+    cmd.pose.orientation.x =  quaternion.getX();
+    cmd.pose.orientation.y =  quaternion.getY();
+    cmd.pose.orientation.z =  quaternion.getZ();
+    cmd.pose.orientation.w =  quaternion.getW();
     _baseGoalPub->publish(cmd);
+    _ui.goalStatusLineEdit->setText("New plan");
     ros::spinOnce();
 }
 
@@ -630,6 +634,13 @@ void MainWindow::autopilotActivated(bool activation)
     }
     sendAutopilotCommand(cmd);
     emit autopilotUpdated(activation);
+}
+
+void MainWindow::goalStatusCallback(const move_base_msgs::MoveBaseActionResult &msg)
+{
+    QString result = QString::fromStdString(msg.status.text);
+    _ui.goalStatusLineEdit->setText(result);
+
 }
 
 } // namespace
