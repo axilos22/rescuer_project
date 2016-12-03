@@ -14,10 +14,20 @@
 
 %FUNCTIONS
 \newcommand{\centerImage}[1]{
-\begin{center}
-Image: #1
-%\includegraphics{#1}
-\end{center}
+	\begin{figure}[h]
+	\centering
+	Image: #1
+	%\includegraphics{#1}
+	\end{figure}
+}
+
+\newcommand{\centerFigure}[2]{
+	\begin{figure}[h]
+	\centering
+	Image: #1
+	%\includegraphics{#1}
+	\label{fig1:#2}
+	\end{figure}
 }
 
 \newcommand{\Monica}{\texttt{Monica ayuda}}
@@ -26,7 +36,7 @@ Image: #1
 %DOCUMENT
 \begin{document}
 \graphicspath{{media/}}
-\pagestyle{plain}
+\pagestyle{headings}
 \author{Axel Jeanne \and Monica Arias Rivera}
 \title{Cooperative supervised mobile manipulator}
 \maketitle
@@ -226,6 +236,7 @@ This was done by...  \Monica
 \Monica
 
 \subsection{Testing and first results}
+
 
 \section{Result analysis and conclusions}
 \subsection{Final results analysis}
