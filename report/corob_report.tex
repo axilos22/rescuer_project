@@ -8,7 +8,22 @@
 \usepackage{hyperref}
 \usepackage{textcomp}
 \usepackage{graphicx}
+\usepackage{listings}
+\usepackage{verbatim}
 
+
+%FUNCTIONS
+\newcommand{\centerImage}[1]{
+\begin{center}
+Image: #1
+%\includegraphics{#1}
+\end{center}
+}
+
+\newcommand{\Monica}{\texttt{Monica ayuda}}
+
+
+%DOCUMENT
 \begin{document}
 \graphicspath{{media/}}
 \pagestyle{plain}
@@ -100,21 +115,20 @@ created called rqt (ROS Qt).
 
 
 \subsection{Mobile base}
-\begin{center}
-Image here
-%\includegraphics{turtlebot.png}
-\end{center}
-The mobile base used is a TurtleBot. TurtleBot is a low-cost, personal robot kit with open-source software
+\centerImage{turtlebot.png}
+
+The mobile base used is a TurtleBot. TurtleBot is a low-cost, personal robot kit with open-
+source software
 provided by different partners mostly for educational activities.
-Our mobile base was equipped with a Microsoft\textcopyright Kinect\texttrademark : a cheap camera which is
-able to compute the depth of an image easily. Having such information is very interesting for navigation
+Our mobile base was equipped with a Microsoft\textcopyright Kinect\texttrademark : a cheap 
+camera which is
+able to compute the depth of an image easily. Having such information is very interesting for 
+navigation
 purpose since the relative distance to object is easily accessible.
 
 \subsection{Quadrotor}
-\begin{center}
-Image here
-%\includegraphics{ar_drone_gps_edition.png}
-\end{center}
+\centerImage{arDroneGpsEdition.png}
+
 The quad-rotor used is a Parrot\textcopyright AR Drone v2\texttrademark it is a 4 propellers
 drone which has a ROS compatible driver. It is also equipped with two cameras: one in front
 and another in the bottom. The bottom camera can be used for visual tracking and the drone
@@ -151,25 +165,66 @@ is not accessed anymore after start-up. The system will enter the decoupled mode
 are decoupled and can be separately controlled, either by tele-operation or any other method.
 
 \subsubsection{Assistance mode}
-The assistance mode is a semi-operated mode. In this mode, the drone will adopt a set of pre-defined
-positions around the mobile base. For instance in the case of navigation, the drone will move among a semi-circle (or full circle) behind (around) the mobile platform, allowing the operator to have a better awareness of the situation.
-\begin{center}
-Image here
-%\includegraphics{assistanceBahavior.png}
-\end{center}
-Additional behaviors can be added into the assistance mode to be even more effective, for instance
-adopting a lateral camera position while the robot is grasping an object. This would allows the operator
-to have a real-time visual feedback on its action. Another behavior could be "forward scouting" allowing the drone to explore the area before engaging the mobile base.
+The assistance mode is a semi-operated mode. In this mode, the drone will adopt a set of pre-
+defined
+positions around the mobile base. For instance in the case of navigation, the drone will move 
+among a semi-circle (or full circle) behind (around) the mobile platform, allowing the 
+operator to have a better awareness of the situation.
 
+\centerImage{assistanceBehavior.png}
+
+Additional behaviours can be added into the assistance mode to be even more effective, for
+ instance adopting a lateral camera position while the robot is grasping an object. This would
+  allows the operator to have a real-time visual feedback on its action. Another behaviour
+   could be "forward scouting" allowing the drone to explore the area before engaging the 
+   mobile base.
 
 \section{Work achieved}
 
 \subsection{GUI programming}
-Programming the GUI was facilitated by the rqt package. Setting up the interface was, however, a complicated task since the tutorial of rqt is not exactly finished and omitted crucial setup details.
+Programming the GUI was facilitated by the rqt package. Setting up the interface was, however,
+ a complicated task since the tutorial of rqt is not exactly finished and omitted crucial set-
+ up details. What the rqt package do, is creating a ROS nodelet which allow having access to
+all the ROS useful features: subscriber, publisher, message types, etc.
 
-Once the first test widget were operational, the development of the could start.
+Then this nodelet is like a Qt blanc page, allowing us to program the GUI we want. It is 
+important to note that the QWidgets and the ROS services run on a different thread this 
+imply some limitations because a ROS Callback
+\href{http://wiki.ros.org/rqt/Tutorials/Writing\%20a\%20C\%2B\%2B\%20Plugin}
+{can't access a Qt element}.
+
+Once the first test widget were operational, the development of the GUI could start: we had a 
+first sketch of what we wanted so we developed the GUI along with the features we were
+testing on the physical robot.
+\centerImage{guiSketch.png}
+
+Then along with the functionalities, the GUI became more complex and diversified.
+\centerImage{guiV2.png}
+
+In the final version of the GUI; an autopilot has been added, creating a new section in the 
+GUI. This autopilot is based on the \verb!tum_ardrone! ROS package.
+\centerImage{guiV3.png}
+
 \subsection{Robots interactions}
+The first achievement to make was to have visual tracking of the drone. For this task, we used 
+the on-board control algorithm of the drone. This had many advantages: 
+\begin{itemize}
+\item The implementation was facilitated: activating the tracking on the drone can be done by 
+setting a few parameters to different values. Then additional parameters can be tuned to
+obtain a more or less robust tracking.
+\item The delay in control is very short: although we don't have full control on the control
+loop, the delay between sending commands and command application is very short. According to
+the average ping of the drone, the delay can vary from 50ms to 3000ms. In a control loop,
+such fluctuations may make the system unstable.
+\end{itemize}
+
+Then to have more robots interaction, it was necessary to make the two robots communicate.
+The first interaction we wanted was to be able to perform a "rally on my position" procedure.
+This was done by...  \Monica
+
 \subsection{Simulator implementation}
+\Monica
+
 \subsection{Testing and first results}
 
 \section{Result analysis and conclusions}
