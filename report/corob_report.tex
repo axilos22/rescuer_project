@@ -25,6 +25,8 @@
 	\begin{figure}[h]
 	\centering
 	Image: #1
+	
+	
 	%\includegraphics{#1}
 	\label{fig1:#2}
 	\end{figure}
@@ -222,11 +224,15 @@ the on-board control algorithm of the drone. This had many advantages:
 \item The implementation was facilitated: activating the tracking on the drone can be done by 
 setting a few parameters to different values. Then additional parameters can be tuned to
 obtain a more or less robust tracking.
-\item The delay in control is very short: although we don't have full control on the control
+
+\item The delay in control is reduced: although we don't have full control on the control
 loop, the delay between sending commands and command application is very short. According to
-the average ping of the drone, the delay can vary from 50ms to 3000ms. In a control loop,
-such fluctuations may make the system unstable.
+the average ping of the drone, the delay can vary from 50~ms to 3000~ms. In a control loop,
+such fluctuations can make the system unstable.
 \end{itemize}
+
+As the cooperation of robots could not be achieve before having a total control over the two robots, 
+we started programming robotics interactions toward the end of the project.
 
 Then to have more robots interaction, it was necessary to make the two robots communicate.
 The first interaction we wanted was to be able to perform a "rally on my position" procedure.
@@ -235,11 +241,27 @@ This was done by...  \Monica
 \subsection{Simulator implementation}
 \Monica
 
-\subsection{Testing and first results}
-
 
 \section{Result analysis and conclusions}
-\subsection{Final results analysis}
+\subsection{Results analysis}
+\subsubsection{Experiment 1}
+The first test was to tele-operate the drone on top of the turtlebot and then, let the on board control
+manage the tracking.
+\centerFigure{firstTest.png,The drone performing a "rally on me" operation}
+The test was successful and no trouble arose during this phase. Indeed; tele-operating the drone is 
+safe since we have total control over it's movements.
+As expected, the on board controller managed to keep the drone stable while still tracking the mobile base 
+movement. However we noted that this controller does not re-center the drone: if the drone has a static
+error, the tracker won't compensate it: the drone will remain shifted.
+
+\subsubsection{Experiment 2}
+The second test was to perform the same operation but using the auto-pilot of the \verb!tum_ardrone!
+package for ralling on top of the mobile base.
+
+The experiment was not a total success, the auto-pilot rely a lot on the visual camera calibration to 
+localize, and this lead to erratic behavior and static drifting.
+The autopilot did get the drone on the desired position but then drift away periodically. This lead to the 
+lost of track of the visual feature, leading to the interruption of the tracking.
 \subsection{Improvement and future work}
 \subsection{Conclusion}
 

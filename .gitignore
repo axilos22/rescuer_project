@@ -74,3 +74,4 @@ CATKIN_IGNORE
 
 #Ax ignore
 *.old
+*.png
