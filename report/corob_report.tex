@@ -11,33 +11,24 @@
 \usepackage{listings}
 \usepackage{verbatim}
 
+%PARAM
+%Linux
+%\graphicspath{{media/}}
+%Windows
+\graphicspath{{./media/}}
 
 %FUNCTIONS
-\newcommand{\centerImage}[1]{
-	\begin{figure}[h]
-	\centering
-	Image: #1
-	%\includegraphics{#1}
-	\end{figure}
-}
-
 \newcommand{\centerFigure}[2]{
-	\begin{figure}[h]
-	\centering
-	Image: #1
-	
-	
-	%\includegraphics{#1}
-	\label{fig1:#2}
-	\end{figure}
+\begin{figure}[h]	
+%Image: #1
+\centering
+\includegraphics[width=10cm]{#1}
+\caption{#2}
+\end{figure}
 }
-
-\newcommand{\Monica}{\texttt{Monica ayuda}}
-
 
 %DOCUMENT
 \begin{document}
-\graphicspath{{media/}}
 \pagestyle{headings}
 \author{Axel Jeanne \and Monica Arias Rivera}
 \title{Cooperative Supervised Mobile Manipulator}
@@ -90,6 +81,8 @@ system which can be used in hazardous areas. It uses two platforms:
 \item A supervisor platform which keeps an overview of the situation
 \end{itemize}
 
+\centerFigure{teleopSystem.png}{The tele-operated robotic system}
+
 To deliver a fully applicable solution, a GUI (Graphical User Interface) is provided in
 order to see what the system is doing in real time.
 
@@ -126,7 +119,12 @@ created called rqt (ROS Qt).
 
 
 \subsection{Mobile base}
-\centerImage{turtlebot.png}
+
+\begin{figure}[h]	
+\centering
+\includegraphics[height=5cm]{turtlebot.png}
+\caption{The Turtlebot}
+\end{figure}
 
 The mobile base used is a TurtleBot. TurtleBot is a low-cost, personal robot kit with open-
 source software
@@ -136,7 +134,7 @@ navigation
 purposes since the relative distance to object is easily accessible.
 
 \subsection{Quadrotor}
-\centerImage{arDroneGpsEdition.png}
+\centerFigure{arDroneGpsEdition.png}{AR Drone v2}
 
 The quadrotor used is a Parrot\textcopyright AR Drone v2\texttrademark it is a 4 propellers
 drone which has a ROS compatible driver. It is also equipped with two cameras: one in front
@@ -179,13 +177,13 @@ positions around the mobile base. For instance in the case of navigation, the dr
 among a semi-circle (or full circle) around the mobile platform, allowing the 
 operator to have better awareness of the situation.
 
-\centerImage{assistanceBehavior.png}
+\centerFigure{assistanceBehavior.png}{Map of the assistance behaviour}
 
 Additional behaviours can be added into the assistance mode to be even more effective, for
- instance adopting a lateral camera position while the robot is grasping an object. This would
-  allow the operator to have a real-time visual feedback on the action. Another behaviour
-   could be "forward scouting" allowing the drone to explore the area before engaging the 
-   mobile base.
+instance adopting a lateral camera position while the robot is grasping an object. This would
+allow the operator to have a real-time visual feedback on the action. Another behaviour
+could be "forward scouting" allowing the drone to explore the area before engaging the 
+mobile base.
 
 \section{Work achieved}
 
@@ -229,14 +227,14 @@ important to note that the QWidgets and the ROS services run on a different thre
 Once the first test widget was operational, the development of the GUI could start: we had a 
 first sketch of what we wanted so we developed the GUI along with the features we were
 testing on the physical robot.
-\centerImage{guiSketch.png}
+\centerFigure{guiSketch.png}{GUI version 0.1}
 
 Then along with the functionalities, the GUI became more complex and diversified.
-\centerImage{guiV2.png}
+\centerFigure{guiV2.png}{GUI version 1.0}
 
 In the final version of the GUI, an autopilot has been added, creating a new section in the 
 GUI. This autopilot is based on the \verb!tum_ardrone! ROS package.
-\centerImage{guiV3.png}
+\centerFigure{guiV3.png}{GUI version 3.0}
 
 \subsection{Robots interactions}
 
@@ -261,7 +259,8 @@ Once we had each robot working separately on Gazebo, we had to be careful with t
 \subsubsection{Experiment 1}
 The first test was to tele-operate the drone on top of the turtlebot, and let the on board control
 manage the tracking.
-\centerImage{firstTest.png} 
+%need image
+%\centerImage{firstTest.png} 
 
 The drone performing a "rally on me" operation.
 
