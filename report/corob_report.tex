@@ -273,14 +273,45 @@ error, the tracker won't compensate it: the drone will remain shifted.
 
 \subsubsection{Experiment 2}
 The second test was to perform the same operation but using the auto-pilot of the \verb!tum_ardrone!
-package for ralling on top of the mobile base.
+package for rallying on top of the mobile base.
 
 The experiment was not a total success, the auto-pilot rely a lot on the visual camera calibration to 
 localize, and this lead to erratic behavior and static drifting.
 The autopilot did get the drone on the desired position but then drift away periodically. This lead to the 
 lost of track of the visual feature, leading to the interruption of the tracking.
+
+We re-tried performing the experiment and again, the same stability issues happened. After a few tests we 
+saw very different behaviors: sometime the auto-pilot would manage perfectly to go to position without any
+drifting and sometime the drone would drift away dramatically. In order to minimize this problem, we 
+automated the take off procedure to have the best possible camera calibration during take-off. This 
+allowed to reduce the erratic behavior but didn't entirety solved the problem: erratic behavior can happen
+especially of the front camera does not find enough visual keypoints.
+
+\subsubsection{Experiment 3}
+In order to verify the "rally on me" procedure, we implemented this setup into Gazebo simulator to test if
+the position of the frames were correct and if the call to the frame transformation service was working.
+
+The experiment in Gazebo went flawlessly, the drone stays perfectly stable and the frame attached to the 
+mobile base is always align.
+
 \subsection{Improvement and future work}
-\subsection{Conclusion}
+\subsubsection{Graphical user interface}
+Improving the current GUI can be made by adding more dynamic elements into it. The current problem is
+that it displays lots of information in a "raw" manner. The global design of the GUI could be revisited in
+order to present all information  in a coherent and clear way.
+
+\subsubsection{Cooperative behavior}
+We have presented many different cooperative behavior for this system, however we only had time to 
+implement one of them. It would be interesting now that the two robots are under control, to implement
+different cooperative behaviors, test their stability and eventually keep the most robust and effective
+one.
+
+\subsubsection{Simulation}
+As the simulator doesn't reproduce accurately the physical behavior of the drone, having a more detailed 
+AR Drone model would help to test stability and control issues, without having to use the real physical 
+system.
+
+\section{Conclusion}
 
 
 \bibliography{bib}
