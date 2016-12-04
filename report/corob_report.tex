@@ -40,17 +40,17 @@
 \graphicspath{{media/}}
 \pagestyle{headings}
 \author{Axel Jeanne \and Monica Arias Rivera}
-\title{Cooperative supervised mobile manipulator}
+\title{Cooperative Supervised Mobile Manipulator}
 \maketitle
 \begin{abstract}
-Robotic systems grew in complexity and diversity due to the increasing complexion of the task
-they are performing. As complexity increase, decoupling element into smaller simpler part is
-regularly done. As a part if this decoupling trend, cooperative robotics grant an even 
-larger change: using multiple robot to perform a single, yet complex, task.
+Robotic systems are growing in complexity and diversity due to the increasing challenges of the tasks
+they are performing. As complexity increases, decoupling elements into smaller simpler parts is
+regularly done. Following this decoupling trend, cooperative robotics grants an even 
+larger change: using multiple robots to perform a single, yet complex, task.
 
 This report present the work performed during the Supervised Mobile Manipulator (SMM) project.
-The project consists in making a cooperative robotic system providing "smart" behaviour to
-make the tele-operation easier to the user while keeping effectiveness of the controlled robot 
+The project consists in making a cooperative robotic system provide "smart" behaviour to
+make the tele-operation easier to the user, while keeping effectiveness of the controlled robots 
 unchanged.
 
 For this project we used different hardware and software elements that we will introduce,
@@ -63,16 +63,16 @@ then we will present different cooperative behaviours and will expose their stre
 \clearpage
 \section{Theoretical content}
 \subsection{Advantages of cooperative system}
-In most cases, the operator performing a task remotely only have a single point of view: the
-one of the embedded camera. In multiple different systems, it has been shown that this can
+In most cases, the operator performing a task remotely only has a single point of view: the
+one of the embedded camera. In multiple different systems, this can
 lead to inconvenient situations where the operator is performing a task with a sub-optimal
 vision of the situation.
 
-One solution to this problem could be to add an animate vision system\cite{Ballard1991}
-but this kind of solution increase vastly complexity of the system since all the vision system
-has to be actuated. Another solution could be to increase the number of camera on the robot.
-This solution increase the robot payload and is actually not very convenient for the user
-since more video streams has now to be monitored while performing the task. The solution we chose is to add an external robot to provide a "supervisor" vision of the acting robot. This solution adds many different  advantages:
+One solution to this problem could be to add an animate vision system \cite{Ballard1991}
+but this kind of solution vastly increases the complexity of the system since the whole vision system
+has to be actuated. Another solution could be to increase the number of cameras on the robot.
+This solution increases the robot payload and is actually not very convenient for the user
+since more video streams now have to be monitored while performing the task. The solution we chose is to add an external robot to provide a "supervisor" vision of the acting robot. This solution adds many different  advantages:
 
 \begin{enumerate}
 \item The supervisor can provide vision from different angles while the action robot is static
@@ -82,16 +82,16 @@ since more video streams has now to be monitored while performing the task. The 
 
 
 \subsection{Problem statement}
-The Supervise Mobile Manipulator Project (SMM) goal is to develop a cooperative robotics
+The Supervised Mobile Manipulator Project (SMM) goal is to develop a cooperative robotics
 system which can be used in hazardous areas. It uses two platforms: 
 
 \begin{itemize}
 \item An action platform which perform the physical operation
-\item An supervisor platform which keep an overview of the situation
+\item A supervisor platform which keeps an overview of the situation
 \end{itemize}
 
-To deliver a fully applicable solution, a GUI (Graphical User Interface) had to be provided in
-order to see what is the system doing in real time.
+To deliver a fully applicable solution, a GUI (Graphical User Interface) is provided in
+order to see what the system is doing in real time.
 
 
 \subsection{Tools used}
@@ -101,18 +101,17 @@ the code maintained and keep track of changes in code; we used \href{https://git
  (VCS).
 
 \subsubsection{ROS}
-\href{http://www.ros.org}{ROS} stands for Robotic Operating System; ROS is not technically a OS but provides many abstraction for network communications among robots. As we require cooperation among our 
-system, ROS was a very useful tool.
+\href{http://www.ros.org}{ROS} stands for Robotic Operating System, although is not technically an OS. ROS is a middleware that provides an easy to use communication platform for different software and hardware elements. ROS was a very useful tool to implement cooperation in our system, particularly the network communication among robots.
 
 \subsubsection{Gmapping}
 The \href{http://wiki.ros.org/gmapping}{Gmapping} ROS package is an implementation of the Simultanous Localization and Mapping (SLAM) algorithm. It builds a grid map from a laser scan, and localizes the robot from odometry data and features extracted from the environment.
 
 \subsubsection{Navigation Stack}
-The \href{http://wiki.ros.org/navigation}{Navigation} ROS package enables a mobile robot to avoid obstacles in the environment based on sensor readings, make a plan to reach a goal and produces appropriate velocities to get there. It accomplishes this through two separate implementations. 
+The \href{http://wiki.ros.org/navigation}{Navigation} ROS package enables a mobile robot to avoid obstacles in the environment (based on sensor readings), make a plan to reach a goal and produces appropriate velocities to get there. It accomplishes this through two separate implementations. 
 
-First it builds a global costmap of the perceived environment, and builds a global plan from the current position to the goal based on Djisktra's algorithm, this part is platform independent. 
+First it builds a global costmap of the perceived environment, and builds a global path from the current position to the goal based on Djisktra's algorithm, obtaining the lowest cost path. This part is platform independent. 
 
-Secondly it builds a local costmap, taking into account close obstacles and the global plan, and sends the command velocities to the platform. The local planner is  platform dependant, and has to be tuned for optimal performance.
+Secondly it builds a local costmap, taking into account close obstacles and the global path, and sends the command velocities to the platform. The local planner is  platform dependant, and has to be tuned for optimal performance.
 
 \subsubsection{Tum Ardrone}
 The \href{http://wiki.ros.org/tum_ardrone}{Tum Ardrone} ROS package provides a PID controller for the AR Drone, coupled with a state estimation implementation with Extended Kalman Filter (EKF) and Parallel Tracking and Mapping (PTAM).
@@ -132,16 +131,14 @@ created called rqt (ROS Qt).
 The mobile base used is a TurtleBot. TurtleBot is a low-cost, personal robot kit with open-
 source software
 provided by different partners mostly for educational activities.
-Our mobile base was equipped with a Microsoft\textcopyright Kinect\texttrademark : a cheap 
-camera which is
-able to compute the depth of an image easily. Having such information is very interesting for 
+Our mobile base was equipped with an ASUS Xtion PRO, which uses an infrared sensor and adaptive depth detection technology. Having such information is very interesting for 
 navigation
-purpose since the relative distance to object is easily accessible.
+purposes since the relative distance to object is easily accessible.
 
 \subsection{Quadrotor}
 \centerImage{arDroneGpsEdition.png}
 
-The quad-rotor used is a Parrot\textcopyright AR Drone v2\texttrademark it is a 4 propellers
+The quadrotor used is a Parrot\textcopyright AR Drone v2\texttrademark it is a 4 propellers
 drone which has a ROS compatible driver. It is also equipped with two cameras: one in front
 and another in the bottom. The bottom camera can be used for visual tracking and the drone
 has an on-board tracking system, allowing a decent tracking without latency issues.
@@ -169,55 +166,42 @@ robots should establish connection and start exchanging their respective localiz
 
 \subsubsection{Coupled mode}
 In this mode, the navigation of the two robots is linked, the mobile-base robot has asked the drone to 
-rally on top of its position and the drone is tracking the mobile base underneath. From this point if the mobile base moves, the drone remains on top of it and move along.
+rally on top of its position and the drone is tracking the mobile base underneath. From this point forward, if the mobile base moves, the drone remains on top and move along with it.
 
 \subsubsection{Decoupled mode}
 This mode is the same as default mode in terms of behaviour. The only difference is that the default mode
-is not accessed anymore after start-up. The system will enter the decoupled mode. The two robots movements
+is not accessed any more after start-up. When the system enters the decoupled mode, the two robots movements
 are decoupled and can be separately controlled, either by tele-operation or any other method.
 
 \subsubsection{Assistance mode}
-The assistance mode is a semi-operated mode. In this mode, the drone will adopt a set of pre-
-defined
+The assistance mode is a semi-operated mode. In this mode, the drone will adopt a set of pre-defined
 positions around the mobile base. For instance in the case of navigation, the drone will move 
-among a semi-circle (or full circle) behind (around) the mobile platform, allowing the 
-operator to have a better awareness of the situation.
+among a semi-circle (or full circle) around the mobile platform, allowing the 
+operator to have better awareness of the situation.
 
 \centerImage{assistanceBehavior.png}
 
 Additional behaviours can be added into the assistance mode to be even more effective, for
  instance adopting a lateral camera position while the robot is grasping an object. This would
-  allows the operator to have a real-time visual feedback on its action. Another behaviour
+  allow the operator to have a real-time visual feedback on the action. Another behaviour
    could be "forward scouting" allowing the drone to explore the area before engaging the 
    mobile base.
 
 \section{Work achieved}
 
-\subsection{GUI programming}
-Programming the GUI was facilitated by the rqt package. Setting up the interface was, however,
- a complicated task since the tutorial of rqt is not exactly finished and omitted crucial set-
- up details. What the rqt package do, is creating a ROS nodelet which allow having access to
-all the ROS useful features: subscriber, publisher, message types, etc.
+\subsection{Individual Robot Capabilities}
+In order to have smart behaviours, such that the operator does not need to be concerned with basic commands, some autonomous capabilities were implemented on both robotic platforms. Mainly autonomous navigation of unknown environments for the mobile base, and tracking, both a visual pattern and a given point, for the drone.
 
-Then this nodelet is like a Qt blanc page, allowing us to program the GUI we want. It is 
-important to note that the QWidgets and the ROS services run on a different thread this 
-imply some limitations because a ROS Callback
-\href{http://wiki.ros.org/rqt/Tutorials/Writing\%20a\%20C\%2B\%2B\%20Plugin}
-{can't access a Qt element}.
+\subsubsection{Mobile Base}
+Autonomous navigation of unknown environments was implemented with the Turtlebot.
 
-Once the first test widget were operational, the development of the GUI could start: we had a 
-first sketch of what we wanted so we developed the GUI along with the features we were
-testing on the physical robot.
-\centerImage{guiSketch.png}
+The Gmapping ROS package was used to create a map of the environment as the Turtlebot travels through it, and to provide more robust localization within this created map. 
 
-Then along with the functionalities, the GUI became more complex and diversified.
-\centerImage{guiV2.png}
+Navigating through the environment was done through the Navigation ROS package, allowing the robot to reach a defined goal, while avoiding obstacles. A special plugin was used to prioritize the path with the most clearance between obstacles. 
 
-In the final version of the GUI; an autopilot has been added, creating a new section in the 
-GUI. This autopilot is based on the \verb!tum_ardrone! ROS package.
-\centerImage{guiV3.png}
 
-\subsection{Robots interactions}
+
+\subsubsection{Quadrotor}
 The first achievement to make was to have visual tracking of the drone. For this task, we used 
 the on-board control algorithm of the drone. This had many advantages: 
 \begin{itemize}
@@ -231,25 +215,58 @@ the average ping of the drone, the delay can vary from 50~ms to 3000~ms. In a co
 such fluctuations can make the system unstable.
 \end{itemize}
 
-As the cooperation of robots could not be achieve before having a total control over the two robots, 
-we started programming robotics interactions toward the end of the project.
 
-Then to have more robots interaction, it was necessary to make the two robots communicate.
+\subsection{GUI programming}
+Programming the GUI was facilitated by the rqt package. Setting up the interface was, however,
+ a complicated task since the tutorial of rqt is not exactly finished and omitted crucial set-up details. The rqt package creates a ROS nodelet which allows access to
+all the ROS useful features: subscriber, publisher, message types, etc.
+
+Then this nodelet acts like a Qt blanc page, allowing us to program the GUI we want. It is 
+important to note that the QWidgets and the ROS services run on a different thread, implying some limitations because a ROS Callback
+\href{http://wiki.ros.org/rqt/Tutorials/Writing\%20a\%20C\%2B\%2B\%20Plugin}
+{can't access a Qt element}.
+
+Once the first test widget was operational, the development of the GUI could start: we had a 
+first sketch of what we wanted so we developed the GUI along with the features we were
+testing on the physical robot.
+\centerImage{guiSketch.png}
+
+Then along with the functionalities, the GUI became more complex and diversified.
+\centerImage{guiV2.png}
+
+In the final version of the GUI, an autopilot has been added, creating a new section in the 
+GUI. This autopilot is based on the \verb!tum_ardrone! ROS package.
+\centerImage{guiV3.png}
+
+\subsection{Robots interactions}
+
+
+As the cooperation of robots could not be achieved before having total control over the two robots, 
+we started programming the interactions toward the end of the project.
+
+Then to have more robot interaction, it was necessary to make the two robots communicate.
 The first interaction we wanted was to be able to perform a "rally on my position" procedure.
-This was done by...  \Monica
+This was done by an event based approach in which the drone asks the Turtlebot for a point to go to. When the Turtlebot receives this request it broadcasts a new frame on top of it's position (where the drone should be at), and does the appropriate transformations to send the goto command to the drone's autopilot. The drone goes toward this point, and once it perceives the visual pattern it goes on to tracking the pattern, and the Turtlebot stops broadcasting this point.
 
 \subsection{Simulator implementation}
-\Monica
+In order to debug and test the cooperative behaviours without having to worry about the safety of the drone, we implemented a simulation of the whole system in Gazebo.
+
+The Turtlebot has plenty of support in the community, and did not present any major difficulties to use it in the simulation. On the other hand, the AR Drone's simulator package (Tum Sim) was made originally for the Hydro version of ROS, one previous to the one we are using (Indigo). It was required to do some slight modifications to the SDF description files to make it compatible with our system.
+
+Once we had each robot working separately on Gazebo, we had to be careful with topic and frame names when we launched them together. The namespace 'quadrotor' was used to launch the drone model and related nodes. By changing the topic names we had to modify the source code of the Tum Sim package again, since it was not possible to remap the sensor information topic names used to stabilize the drone.
 
 
 \section{Result analysis and conclusions}
 \subsection{Results analysis}
 \subsubsection{Experiment 1}
-The first test was to tele-operate the drone on top of the turtlebot and then, let the on board control
+The first test was to tele-operate the drone on top of the turtlebot, and let the on board control
 manage the tracking.
-\centerFigure{firstTest.png,The drone performing a "rally on me" operation}
+\centerImage{firstTest.png} 
+
+The drone performing a "rally on me" operation.
+
 The test was successful and no trouble arose during this phase. Indeed; tele-operating the drone is 
-safe since we have total control over it's movements.
+safe since we have total control over it's motion.
 As expected, the on board controller managed to keep the drone stable while still tracking the mobile base 
 movement. However we noted that this controller does not re-center the drone: if the drone has a static
 error, the tracker won't compensate it: the drone will remain shifted.
