@@ -148,16 +148,16 @@ the driver package: \href{"https://github.com/AutonomyLab/ardrone_autonomy"}
 
 \subsection{Cooperative behaviour}
 As the two robots have to cooperate to perform their common goal, it was required to implement
-cooperative behaviors on the system. During the conceptualization of the project we established different
-cooperative behaviors that the system should be able to manage:
+cooperative behaviours on the system. During the conceptualization of the project we established different
+cooperative behaviours that the system should be able to manage:
 
 \begin{figure}[h]	
 \includegraphics[height=7cm]{cooperativeModes.png}
-\caption{Cooperative modes state map}
+\caption{Cooperative modes states map}
 \end{figure}
 
 \subsubsection{Default mode}
-The default mode is the one in which the system start. No particular behavior is expected but the two
+The default mode is the one in which the system start. No particular behaviour is expected but the two
 robots should establish connection and start exchanging their respective localization and status data.
 
 \subsubsection{Coupled mode}
@@ -273,15 +273,15 @@ The second test was to perform the same operation but using the auto-pilot of th
 package for rallying on top of the mobile base.
 
 The experiment was not a total success, the auto-pilot rely a lot on the visual camera calibration to 
-localize, and this lead to erratic behavior and static drifting.
+localize, and this lead to erratic behaviour and static drifting.
 The autopilot did get the drone on the desired position but then drift away periodically. This lead to the 
 lost of track of the visual feature, leading to the interruption of the tracking.
 
 We re-tried performing the experiment and again, the same stability issues happened. After a few tests we 
-saw very different behaviors: sometime the auto-pilot would manage perfectly to go to position without any
+saw very different behaviours: sometime the auto-pilot would manage perfectly to go to position without any
 drifting and sometime the drone would drift away dramatically. In order to minimize this problem, we 
 automated the take off procedure to have the best possible camera calibration during take-off. This 
-allowed to reduce the erratic behavior but didn't entirety solved the problem: erratic behavior can happen
+allowed to reduce the erratic behaviour but didn't entirety solved the problem: erratic behaviour can happen
 especially of the front camera does not find enough visual keypoints.
 
 \subsubsection{Experiment 3}
@@ -293,24 +293,42 @@ mobile base is always align.
 
 \subsection{Improvement and future work}
 \subsubsection{Graphical user interface}
-Improving the current GUI can be made by adding more dynamic elements into it. The current problem is
-that it displays lots of information in a "raw" manner. The global design of the GUI could be revisited in
+Improving the current GUI can be made by adding more dynamic elements into it. The current 
+problem is
+that it displays lots of information in a "raw" manner. The global design of the GUI could be 
+revisited in
 order to present all information  in a coherent and clear way.
 
-\subsubsection{Cooperative behavior}
-We have presented many different cooperative behavior for this system, however we only had time to 
-implement one of them. It would be interesting now that the two robots are under control, to implement
-different cooperative behaviors, test their stability and eventually keep the most robust and effective
+\subsubsection{Cooperative behaviour}
+We have presented many different cooperative behaviour for this system, however we only had 
+time to implement one of them. It would be interesting now that the two robots are under 
+control, to implement
+different cooperative behaviours, test their stability and eventually keep the most robust and 
+effective
 one.
 
 \subsubsection{Simulation}
-As the simulator doesn't reproduce accurately the physical behavior of the drone, having a more detailed 
-AR Drone model would help to test stability and control issues, without having to use the real physical 
-system.
+As the simulator doesn't reproduce accurately the physical behaviour of the drone, having a 
+more detailed AR Drone model would help to test stability and control issues, without having 
+to use the real physical system.
 
+\clearpage
 \section{Conclusion}
+Cooperative robotics is the next step of evolution in robotic systems.
+Their versatility and relative architectural simplicity make them both very useful while
+keeping a design simple enough to be maintainable.
 
+The general lack of GUI in robotic systems is also a problem that have to be addressed. 
+Robot programmers generally focus on software and middle-ware accurate programs while 
+overlooking the final user activities which might be greatly facilitated by a clear and 
+well-designed GUI.
+By using both good middle-ware libraries (like ROS) combined with good higher level
+software (as Qt) programs for robots can get both easier to use and provide a better 
+feedback.
 
+Implementing cooperative behaviours into (tele-operated) multi-robots system allows to release 
+the operator task load. This permit to focus on the end-goal of the mission while not dealing 
+with situational issues such as camera positioning or sensor feedback accuracy.
 \bibliography{bib}
 \bibliographystyle{abbrv}
 \end{document}
