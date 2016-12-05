@@ -116,7 +116,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="guiStateComboBox">
+        <widget class="QComboBox" name="stateComboBox">
          <item>
           <property name="text">
            <string>Default mode</string>

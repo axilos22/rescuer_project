@@ -83,6 +83,8 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(_ui.rawCmdButton,SIGNAL(pressed()),this,SLOT(autopilotRawCmd()));
     connect(_ui.autopilotCheckbox,SIGNAL(toggled(bool)),this,SLOT(autopilotActivated(bool)));
     connect(this,SIGNAL(autopilotUpdated(bool)),this,SLOT(changeTakeOffButton()));
+    //state behavior connection
+    connect(_ui.stateComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(stateChanged(int)));
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
@@ -582,6 +584,27 @@ void MainWindow::rescuerStop()
     geometry_msgs::Twist cmd;
     _baseCmdVelPub->publish(cmd);
     ros::spinOnce();
+}
+
+void MainWindow::stateChanged(int newState)
+{
+    switch (newState) {
+    case 0:
+        log("default");
+        break;
+    case 1:
+        log("coupled");
+        break;
+    case 2:
+        log("decoupled");
+        break;
+    case 3:
+        log("assistance");
+        break;
+    default:
+        log("? state");
+        break;
+    }
 }
 
 void MainWindow::changeTakeOffButton()

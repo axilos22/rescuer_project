@@ -100,6 +100,8 @@ public slots:
     void autopilotRawCmd();
     void autopilotActivated(bool activation);
     void rescuerStop();
+    /*Behaviors*/
+    void stateChanged(int newState);
 
 signals:
     void batteryUpdated(int percent);
