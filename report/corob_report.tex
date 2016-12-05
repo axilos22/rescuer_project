@@ -193,6 +193,15 @@ Autonomous navigation of unknown environments was implemented with the Turtlebot
 
 The Gmapping ROS package was used to create a map of the environment as the Turtlebot travels through it, and to provide more robust localization within this created map. 
 
+\centerFigure{gazebo.png}{Simulation world on Gazebo}
+
+\begin{figure}[ht]
+	\centering
+    \includegraphics[trim={0 0 0 2cm},clip,angle=270,width=10cm]{gmapping.png}
+    \caption{Map produced by Gmapping}
+    \label{fig:gmapping}
+\end{figure}
+
 Navigating through the environment was done through the Navigation ROS package, allowing the robot to reach a defined goal, while avoiding obstacles. A special plugin was used to prioritize the path with the most clearance between obstacles. 
 
 
