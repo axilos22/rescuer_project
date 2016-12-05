@@ -280,13 +280,12 @@ void MainWindow::connectWithDrone()
 {
     ros::NodeHandle nh = getNodeHandle();
     ROS_DEBUG("@connect with drone");
-    /*Subscribers*/
+    /*SUBSCRIBERS*/
     ros::Subscriber droneNavDataSub = nh.subscribe("/ardrone/navdata",1,&MainWindow::navDataCallback,this);
     ROS_DEBUG("Subbed to navdata");
     ros::Subscriber testSub = nh.subscribe("/test",1,&MainWindow::testCallback,this);
     ROS_DEBUG("Subbed to test sub");
     ros::Subscriber filterStateSub=getNodeHandle().subscribe("/ardrone/predictedPose",1,&MainWindow::autopilotFilterCallback,this);
-
     ros::Subscriber goalStatusSub = nh.subscribe("/move_base/result",1,&MainWindow::goalStatusCallback,this);
     ROS_DEBUG("Subbed to goal status");
 
@@ -298,13 +297,13 @@ void MainWindow::connectWithDrone()
     image_transport::ImageTransport it(nh);
     _itSub = new image_transport::Subscriber(it.subscribe("/ardrone/image_raw",1,&MainWindow::cameraCallback,this));
     ROS_DEBUG("Subbed to the camera");    
-
-
     /*Rescuer*/
     _itSubRescuer = new image_transport::Subscriber(it.subscribe("/camera/rgb/image_raw",1,&MainWindow::cameraRescuerCallback,this));
     ros::Subscriber rescuerPoseSub = nh.subscribe("/mobile_base/abs_pos",1,&MainWindow::rescuerPoseCallback,this);
     _subs.append(rescuerPoseSub);
-    /*Publishers*/
+
+
+    /*PUBLISHERS*/
     #if SIMULATOR==1
     _cmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/quadrotor/cmd_vel",1));
     #else
