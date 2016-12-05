@@ -357,7 +357,11 @@ void MainWindow::setDroneState(int arg)
 void MainWindow::swapCamera()
 {
     ROS_DEBUG("Swap Camera callback");
-    ros::ServiceClient swapCamService = getNodeHandle().serviceClient<std_srvs::Empty>("/ardrone/togglecam");
+    #if SIMULATOR==1
+        ros::ServiceClient swapCamService = getNodeHandle().serviceClient<std_srvs::Empty>("/quadrotor/ardrone/togglecam");
+    #else
+        ros::ServiceClient swapCamService = getNodeHandle().serviceClient<std_srvs::Empty>("/ardrone/togglecam");
+    #endif
     std_srvs::Empty emptyCall;
     swapCamService.call(emptyCall);
 }

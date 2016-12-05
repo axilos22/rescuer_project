@@ -57,9 +57,9 @@ if __name__ == '__main__':
         pose=String()
         #pose.data = "c goto {0} {1} {2} {3}".format(trans[0],trans[1],trans[2]-0.5,y)
 
-	#with turtlebot 1m offset in x and y	
-	pose.data = "c goto " + "{0:.2f}".format(-trans[1]-1)+ " {0:.2f}".format(trans[0]+1) + " {0:.2f}".format(trans[2]) + " {0:.2f}".format(y)
-	print("x= " +str(-trans[1]-1)+" y= " +str(trans[0]+1) + " z= " +str(trans[2])+" yaw= " +str(y))
+        #with turtlebot 1m offset in x and y	
+        pose.data = "c goto " + "{0:.2f}".format(-trans[1]-1)+ " {0:.2f}".format(trans[0]+1) + " {0:.2f}".format(trans[2]) + " {0:.2f}".format(y)
+        print("x= " +str(-trans[1]-1)+" y= " +str(trans[0]+1) + " z= " +str(trans[2])+" yaw= " +str(y))
         command.publish(pose)
 
         rate.sleep()
