@@ -10,6 +10,7 @@
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{verbatim}
+\usepackage{subfig}
 
 %PARAM
 %Linux
@@ -19,7 +20,7 @@
 
 %FUNCTIONS
 \newcommand{\centerFigure}[2]{
-\begin{figure}[h]	
+\begin{figure}[ht]	
 %Image: #1
 \centering
 \includegraphics[width=10cm]{#1}
@@ -40,7 +41,7 @@ regularly done. Following this decoupling trend, cooperative robotics grants an 
 larger change: using multiple robots to perform a single, yet complex, task.
 
 This report present the work performed during the Supervised Mobile Manipulator (SMM) project.
-The project consists in making a cooperative robotic system provide "smart" behaviour to
+The project consists in making a cooperative robotic system provide ``smart" behaviour to
 make the tele-operation easier to the user, while keeping effectiveness of the controlled robots 
 unchanged.
 
@@ -63,7 +64,7 @@ One solution to this problem could be to add an animate vision system \cite{Ball
 but this kind of solution vastly increases the complexity of the system since the whole vision system
 has to be actuated. Another solution could be to increase the number of cameras on the robot.
 This solution increases the robot payload and is actually not very convenient for the user
-since more video streams now have to be monitored while performing the task. The solution we chose is to add an external robot to provide a "supervisor" vision of the acting robot. This solution adds many different  advantages:
+since more video streams now have to be monitored while performing the task. The solution we chose is to add an external robot to provide a ``supervisor" vision of the acting robot. This solution adds many different  advantages:
 
 \begin{enumerate}
 \item The supervisor can provide vision from different angles while the action robot is static
@@ -107,7 +108,16 @@ First it builds a global costmap of the perceived environment, and builds a glob
 Secondly it builds a local costmap, taking into account close obstacles and the global path, and sends the command velocities to the platform. The local planner is  platform dependant, and has to be tuned for optimal performance.
 
 \subsubsection{Tum Ardrone}
-The \href{http://wiki.ros.org/tum_ardrone}{Tum Ardrone} ROS package provides a PID controller for the AR Drone, coupled with a state estimation implementation with Extended Kalman Filter (EKF) and Parallel Tracking and Mapping (PTAM).
+The \href{http://wiki.ros.org/tum_ardrone}{Tum Ardrone} ROS package allows us to control the AR Drone at a higher level. It implements three nodes: 
+
+\begin{itemize}
+\item State Estimation: Provides an estimate of the drone's position from the navigation data sent by the drone, the velocity commands and the tracking of key points in the front camera image. It uses Extended Kalman Filter (EKF) and Parallel Tracking and Mapping (PTAM) simultaneously for more accurate prediction.
+
+\item Autopilot: Provides a PID controller for the AR Drone. The gains are already tuned correctly, but an aggressiveness parameter can be set to modify the response time.
+
+\item Graphical User Interface: Monitors and controls the State Estimation and Autopilot nodes.
+
+\end{itemize}
 
 \subsubsection{Gazebo}
 Gazebo is a well known and widely used simulator with a robust physics engine. 
@@ -119,8 +129,7 @@ created called rqt (ROS Qt).
 
 
 \subsection{Mobile base}
-
-\begin{figure}[h]	
+\begin{figure}[ht]	
 \centering
 \includegraphics[height=5cm]{turtlebot.png}
 \caption{The Turtlebot}
@@ -133,13 +142,19 @@ Our mobile base was equipped with an ASUS Xtion PRO, which uses an infrared sens
 navigation
 purposes since the relative distance to object is easily accessible.
 
+
 \subsection{Quadrotor}
-\centerFigure{arDroneGpsEdition.png}{AR Drone v2}
 
 The quadrotor used is a Parrot\textcopyright AR Drone v2\texttrademark it is a 4 propellers
 drone which has a ROS compatible driver. It is also equipped with two cameras: one in front
 and another in the bottom. The bottom camera can be used for visual tracking and the drone
 has an on-board tracking system, allowing a decent tracking without latency issues.
+
+\begin{figure}[ht]	
+\centering
+\includegraphics[height=3cm]{arDroneGpsEdition.png}
+\caption{AR Drone v2}
+\end{figure}
 
 Additionally, some ROS libraries have been created to be compatible with the drone; we used
 one of them called \href{"http://wiki.ros.org/tum_ardrone"}{"tum\_ardrone"} in parallel with
@@ -151,7 +166,7 @@ As the two robots have to cooperate to perform their common goal, it was require
 cooperative behaviours on the system. During the conceptualization of the project we established different
 cooperative behaviours that the system should be able to manage:
 
-\begin{figure}[h]	
+\begin{figure}[ht]	
 \includegraphics[height=7cm]{cooperativeModes.png}
 \caption{Cooperative modes states map}
 \end{figure}
@@ -175,15 +190,26 @@ positions around the mobile base. For instance in the case of navigation, the dr
 among a semi-circle (or full circle) around the mobile platform, allowing the 
 operator to have better awareness of the situation.
 
-\centerFigure{assistanceBehavior.png}{Map of the assistance behaviour}
+\begin{figure}[ht]	
+\centering
+\includegraphics[height=7cm]{assistanceBehavior.png}
+\caption{Map of the assistance behaviour}
+\end{figure}
 
 Additional behaviours can be added into the assistance mode to be even more effective, for
 instance adopting a lateral camera position while the robot is grasping an object. This would
 allow the operator to have a real-time visual feedback on the action. Another behaviour
-could be "forward scouting" allowing the drone to explore the area before engaging the 
+could be ``forward scouting" allowing the drone to explore the area before engaging the 
 mobile base.
 
 \section{Work achieved}
+
+\subsection{Simulator implementation}
+In order to debug and test the cooperative behaviours without having to worry about the safety of the drone, we implemented a simulation of the whole system in Gazebo.
+
+The Turtlebot has plenty of support in the community, and did not present any major difficulties to use it in the simulation. On the other hand, the AR Drone's simulator package (\verb!tum_sim!) was made originally for the Hydro version of ROS, one previous to the one we are using (Indigo). It was required to do some slight modifications to the SDF description files to make it compatible with our system.
+
+Once we had each robot working separately on Gazebo, we had to be careful with topic and frame names when we launched them together. The namespace `quadrotor' was used to launch the drone model and related nodes. By changing the topic names we had to modify the source code of the \verb!tum_sim! package again, since it was not possible to remap the sensor information topic names used to stabilize the drone.
 
 \subsection{Individual Robot Capabilities}
 In order to have smart behaviours, such that the operator does not need to be concerned with basic commands, some autonomous capabilities were implemented on both robotic platforms. Mainly autonomous navigation of unknown environments for the mobile base, and tracking, both a visual pattern and a given point, for the drone.
@@ -191,19 +217,28 @@ In order to have smart behaviours, such that the operator does not need to be co
 \subsubsection{Mobile Base}
 Autonomous navigation of unknown environments was implemented with the Turtlebot.
 
-The Gmapping ROS package was used to create a map of the environment as the Turtlebot travels through it, and to provide more robust localization within this created map. 
+The Gmapping ROS package was used to create a map of the environment as the Turtlebot travels through it, and to provide more robust localization within this created map. In Figure \ref{fig:gmapping} we can see an example of a map produced by Gmapping. This map and the calculated location are then used by the Navigation stack.
 
-\centerFigure{gazebo.png}{Simulation world on Gazebo}
 
-\begin{figure}[ht]
+\begin{figure}[ht!]%
 	\centering
-    \includegraphics[trim={0 0 0 2cm},clip,angle=270,width=10cm]{gmapping.png}
+    \subfloat[Gazebo World]{{\includegraphics[height=3.4cm]{gazebo.png} }}  
+    \qquad  
+    \subfloat[Resulting Map]{{\includegraphics[height=3.4cm]{gmapping.png}}}
     \caption{Map produced by Gmapping}
     \label{fig:gmapping}
 \end{figure}
 
-Navigating through the environment was done through the Navigation ROS package, allowing the robot to reach a defined goal, while avoiding obstacles. A special plugin was used to prioritize the path with the most clearance between obstacles. 
+Navigating through the environment was done through the Navigation ROS package, allowing the robot to reach a defined goal, while avoiding obstacles. A special plugin  was used, which creates a Voronoi diagram of the map given by Gmapping, to prioritize the path with the most clearance between obstacles. We can see in Figure \ref{fig:globalPath} an example of the planned path from the starting point [0,0] to the goal [5,3]. The path is highlighted in green, the obstacles (in yellow) are surrounded by a buffer area where the robot might collide; and the blue lines are the Voronoi diagram, where the robot tries to go on.
 
+\begin{figure}[h!]
+	\centering
+    \includegraphics[width=8cm]{globalplan53.png}
+    \caption{Global path (in green) produced by the Navigation package}
+    \label{fig:globalPath}
+\end{figure}
+
+One of the defined cooperative behaviours is that the drone follows the mobile base.  The extra clearance provided fullfills two roles: increased safety for the mobile base, since it is less likely to hit an obstacle when turning a corner; and it allows the drone enough space to not bump into walls. 
 
 
 \subsubsection{Quadrotor}
@@ -218,7 +253,37 @@ obtain a more or less robust tracking.
 loop, the delay between sending commands and command application is very short. According to
 the average ping of the drone, the delay can vary from 50~ms to 3000~ms. In a control loop,
 such fluctuations can make the system unstable.
+
+\item Monitoring of the environment is possible: the drone is only capable of broadcasting one camera feed at a time. Using the on-board tracking means that it is not necessary to broadcast the bottom camera, giving freedom to the user to choose which camera to visualize depending on the task at hand.
+
 \end{itemize}
+
+
+\begin{figure}[ht]
+	\centering
+    \includegraphics[height=6cm]{visualTracking.png}
+    \caption{AR Drone tracking a visual pattern}
+    \label{fig:visualTracking}
+\end{figure}
+
+
+Unfortunately the simulation of the drone does not include this on-board tracking. To accurately represent the real system we used the \verb!cmvision! ROS package to detect and track the top of the Turtlebot. We define the color to track and the \verb!cmvision! package provides us the image location of the detected blobs with this color. The node we created takes this position and commands the drone to keep the blob centred. The top of the Turtlebot is black, as well as other elements in the simulated world, but the tracking proved to be reliable when the Turtlebot is navigating to a defined goal.
+
+
+\begin{figure}[ht!]%
+	\centering
+    \subfloat[Drone's bottom camera]{{\includegraphics[height=3.4cm]{simTracking.png} }}  
+    \qquad  
+    \subfloat[Drone's position]{{\includegraphics[height=3.4cm]{simTracking2.png}}}
+    \caption{AR Drone tracking the top of the Turtlebot}
+    \label{fig:simTracking}
+\end{figure}
+
+
+The visual tracking allows the drone to follow the mobile base when it is in line of sight. In order to get to the mobile base from another location or to position the drone to supervise a task, we implemented a goto command with the help of the \verb!tum_ardrone! package.
+
+As explained previously the \verb!tum_ardrone! package provides a PID controller and a position estimation, which the controller takes as the current position of the drone. The position estimation was found to not be very reliable on the height of the drone, causing the platform to drift upwards. We created an intermediary node to take in the position estimation and replace the height element with the navigation information provided directly by the drone. This proved to stabilize the drone more robustly.
+
 
 
 \subsection{GUI programming}
@@ -237,13 +302,13 @@ testing on the physical robot.
 \centerFigure{guiSketch.png}{GUI version 0.1}
 
 Then along with the functionalities, the GUI became more complex and diversified.
-\centerFigure{guiV2.png}{GUI version 1.0}
+\centerFigure{guiV2.png}{GUI version 2.0}
 
 In the final version of the GUI, an autopilot has been added, creating a new section in the 
 GUI. This autopilot is based on the \verb!tum_ardrone! ROS package.
 \centerFigure{guiV3.png}{GUI version 3.0}
 
-\begin{figure}[h]	
+\begin{figure}[ht]	
 %Image: #1
 \centering
 \includegraphics[width=14cm]{communicationArchitecture.png}
@@ -257,15 +322,9 @@ As the cooperation of robots could not be achieved before having total control o
 we started programming the interactions toward the end of the project.
 
 Then to have more robot interaction, it was necessary to make the two robots communicate.
-The first interaction we wanted was to be able to perform a "rally on my position" procedure.
+The first interaction we wanted was to be able to perform a ``rally on my position" procedure.
 This was done by an event based approach in which the drone asks the Turtlebot for a point to go to. When the Turtlebot receives this request it broadcasts a new frame on top of it's position (where the drone should be at), and does the appropriate transformations to send the goto command to the drone's autopilot. The drone goes toward this point, and once it perceives the visual pattern it goes on to tracking the pattern, and the Turtlebot stops broadcasting this point.
 
-\subsection{Simulator implementation}
-In order to debug and test the cooperative behaviours without having to worry about the safety of the drone, we implemented a simulation of the whole system in Gazebo.
-
-The Turtlebot has plenty of support in the community, and did not present any major difficulties to use it in the simulation. On the other hand, the AR Drone's simulator package (Tum Sim) was made originally for the Hydro version of ROS, one previous to the one we are using (Indigo). It was required to do some slight modifications to the SDF description files to make it compatible with our system.
-
-Once we had each robot working separately on Gazebo, we had to be careful with topic and frame names when we launched them together. The namespace 'quadrotor' was used to launch the drone model and related nodes. By changing the topic names we had to modify the source code of the Tum Sim package again, since it was not possible to remap the sensor information topic names used to stabilize the drone.
 
 
 \section{Result analysis and conclusions}
@@ -276,7 +335,7 @@ manage the tracking.
 %need image
 %\centerImage{firstTest.png} 
 
-The drone performing a "rally on me" operation.
+The drone performing a ``rally on me" operation.
 
 The test was successful and no trouble arose during this phase. Indeed; tele-operating the drone is 
 safe since we have total control over it's motion.
@@ -301,7 +360,7 @@ allowed to reduce the erratic behaviour but didn't entirety solved the problem: 
 especially of the front camera does not find enough visual keypoints.
 
 \subsubsection{Experiment 3}
-In order to verify the "rally on me" procedure, we implemented this setup into Gazebo simulator to test if
+In order to verify the ``rally on me" procedure, we implemented this setup into Gazebo simulator to test if
 the position of the frames were correct and if the call to the frame transformation service was working.
 
 The experiment in Gazebo went flawlessly, the drone stays perfectly stable and the frame attached to the 
@@ -311,7 +370,7 @@ mobile base is always align.
 \subsubsection{Graphical user interface}
 Improving the current GUI can be made by adding more dynamic elements into it. The current 
 problem is
-that it displays lots of information in a "raw" manner. The global design of the GUI could be 
+that it displays lots of information in a ``raw" manner. The global design of the GUI could be 
 revisited in
 order to present all information  in a coherent and clear way.
 
