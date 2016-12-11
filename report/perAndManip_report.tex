@@ -152,15 +152,22 @@ one of them called \href{"http://wiki.ros.org/tum_ardrone"}{"tum\_ardrone"} in p
 the driver package: \href{"https://github.com/AutonomyLab/ardrone_autonomy"}
 {"ardrone\_autonomy"}.
 
+\subsection{Perception}
+The reason why another robot is added is to increase perception of the system.
+Normally, the system is built for tele-operation but if we consider the possibility of having the system
+working on a "automated" mode. Having these two robots increase the general robustness of the system.
+Each robots having a reference frame, re-calibration of the system can be done but one relatively to the
+other.
+
 \subsection{Cooperative behaviour}
 As the two robots have to cooperate to perform their common goal, it was required to implement
 cooperative behaviours on the system. During the conceptualization of the project we established different
 cooperative behaviours that the system should be able to manage:
 
-\begin{figure}[ht]	
-\includegraphics[height=7cm]{cooperativeModes.png}
+\begin{figure*}[h]	
+\includegraphics[width=\textwidth]{cooperativeModes.png}
 \caption{Cooperative modes states map}
-\end{figure}
+\end{figure*}
 
 \subsubsection{Default mode}
 The default mode is the one in which the system start. No particular behaviour is expected but the two
@@ -290,25 +297,34 @@ important to note that the QWidgets and the ROS services run on a different thre
 Once the first test widget was operational, the development of the GUI could start: we had a 
 first sketch of what we wanted so we developed the GUI along with the features we were
 testing on the physical robot.
-\centerFigure{guiSketch.png}{GUI version 0.1}
+\begin{figure}[ht]	
+\centering
+\includegraphics[width=0.5\textwidth]{guiSketch.png}
+\caption{GUI version 0.1}
+\end{figure}
 
 Then along with the functionalities, the GUI became more complex and diversified.
-\centerFigure{guiV2.png}{GUI version 2.0}
+\begin{figure}[ht]	
+\centering
+\includegraphics[width=0.5\textwidth]{guiV2.png}
+\caption{GUI version 2.0}
+\end{figure}
 
 In the final version of the GUI, an autopilot has been added, creating a new section in the 
 GUI. This autopilot is based on the \verb!tum_ardrone! ROS package.
-\centerFigure{guiV3.png}{GUI version 3.0}
-
 \begin{figure}[ht]	
-%Image: #1
 \centering
-\includegraphics[width=14cm]{communicationArchitecture.png}
-\caption{Communication architecture}
+\includegraphics[width=0.5\textwidth]{guiV3.png}
+\caption{GUI version 3.0}
 \end{figure}
 
+\begin{figure*}[ht]	
+\centering
+\includegraphics[width=\textwidth]{communicationArchitecture.png}
+\caption{Communication architecture}
+\end{figure*}
+
 \subsection{Robots interactions}
-
-
 As the cooperation of robots could not be achieved before having total control over the two robots, 
 we started programming the interactions toward the end of the project.
 
@@ -323,10 +339,8 @@ This was done by an event based approach in which the drone asks the Turtlebot f
 \subsubsection{Experiment 1}
 The first test was to tele-operate the drone on top of the turtlebot, and let the on board control
 manage the tracking.
-%need image
-%\centerImage{firstTest.png} 
 
-The drone performing a ``rally on me" operation.
+The drone performing a "rally on me" operation.
 
 The test was successful and no trouble arose during this phase. Indeed; tele-operating the drone is 
 safe since we have total control over it's motion.
@@ -395,8 +409,10 @@ feedback.
 Implementing cooperative behaviours into (tele-operated) multi-robots system allows to release 
 the operator task load. This permit to focus on the end-goal of the mission while not dealing 
 with situational issues such as camera positioning or sensor feedback accuracy.
+
 \bibliography{bib}
 \bibliographystyle{abbrv}
+\listoffigures
 \end{document}
 
 \end{document}
