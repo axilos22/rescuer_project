@@ -20,7 +20,7 @@ def nav_callback(data):
     print("Real z= " + str(real_z))    
 
 if __name__ == '__main__':
-    rospy.init_node('predict_z')
+    rospy.init_node('replace_z')
 
     command = rospy.Publisher('/ardrone/predictedPose', tum_ardrone.msg.filter_state,queue_size=1)
     rospy.Subscriber('/tum_ardrone/predictedPose', tum_ardrone.msg.filter_state, pose_callback)

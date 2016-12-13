@@ -7,21 +7,27 @@ import tf
 import geometry_msgs.msg
 from std_msgs.msg import String
 
+def mode_callback(data):
+    global mode    
+    mode=data.data #Assigns coupled or decoupled mode
 
 if __name__ == '__main__':
     rospy.init_node('followpoint_drone')
 
-    br = tf.TransformBroadcaster()    
-
     listener = tf.TransformListener()
    
     command = rospy.Publisher('/tum_ardrone/com', String,queue_size=1)
+    
+    #Define coupled (follow) or decoupled (autonomous) mode
+    mode = "decoupled"
+    rospy.Subscriber('/behaviour_mode', String, mode_callback)
 
-    rospy.sleep(0.5)
+    rospy.wait_for_service('/quadrotor/ardrone/togglecam')
+    rospy.sleep(0.6)
     auto_start = String()
     auto_start.data = "c start"
     command.publish(auto_start)
-    rospy.sleep(0.5)
+
     #auto_start.data ="c autoInit 500 800"
     #command.publish(auto_start)   
     #auto_start.data = "c setStayWithinDist 0.2"
@@ -34,32 +40,25 @@ if __name__ == '__main__':
 #     command.publish("c setStayTime 3")
 #     command.publish("c lockScaleFP")
 #==============================================================================
-    rospy.sleep(1.0)
 
     rate = rospy.Rate(1.0)
     while not rospy.is_shutdown():
-
-        br.sendTransform((0.0, 0.0, 1.0),
-                     (0.0, 0.0, 0.0, 1.0),
-                     rospy.Time.now(),
-                     "track_frame",
-                     "base_footprint")
-        rospy.sleep(0.2)
-        try:
-            (trans,rot) = listener.lookupTransform('/mobile_map', '/track_frame', rospy.Time(0))
-            (r,p,y) =  tf.transformations.euler_from_quaternion([rot[0],rot[1],rot[2],rot[3]])
-        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-            continue
-        
-        command.publish("c clearCommands")
-        
-        rospy.sleep(0.2)
-        pose=String()
-        #pose.data = "c goto {0} {1} {2} {3}".format(trans[0],trans[1],trans[2]-0.5,y)
-
-        #with turtlebot 1m offset in x and y	
-        pose.data = "c goto " + "{0:.2f}".format(-trans[1]-1)+ " {0:.2f}".format(trans[0]+1) + " {0:.2f}".format(trans[2]) + " {0:.2f}".format(y)
-        print("x= " +str(-trans[1]-1)+" y= " +str(trans[0]+1) + " z= " +str(trans[2])+" yaw= " +str(y))
-        command.publish(pose)
+        if "de" not in mode:
+            try:
+                (trans,rot) = listener.lookupTransform('/quad_odom', '/track_frame', rospy.Time(0))
+                (r,p,y) =  tf.transformations.euler_from_quaternion([rot[0],rot[1],rot[2],rot[3]])
+            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                continue
+            
+            command.publish("c clearCommands")
+            
+            rospy.sleep(0.2)
+            pose=String()
+            #pose.data = "c goto {0} {1} {2} {3}".format(trans[0],trans[1],trans[2]-0.5,y)
+    
+            #with turtlebot 1m offset in x and y	
+            pose.data = "c goto " + "{0:.2f}".format(-trans[1])+ " {0:.2f}".format(trans[0]) + " {0:.2f}".format(trans[2]) + " {0:.2f}".format(y)
+            print(pose.data)
+            command.publish(pose)
 
         rate.sleep()

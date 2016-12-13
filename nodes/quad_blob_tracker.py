@@ -26,42 +26,47 @@ from cmvision.msg import Blobs, Blob
 #     When reach final point, if drone tracking tag -> command drone to land
 #
 #==============================================================================
+
+def mode_callback(data):
+    global mode    
+    mode=data.data #Assigns coupled or decoupled mode
  
 def blob_detect_callback(data):
     global detected
-    if data.blob_count > 0:        
-        if data.blobs[0].name == 'Black':
-            if not detected:  
-                detected = True	  
-                #Stop controller
+    if "de" not in mode:
+        if data.blob_count > 0:        
+            if data.blobs[0].name == 'Black':
+                if not detected:  
+                    detected = True	  
+                    #Stop controller
+                    msg = String()
+                    msg.data = "c stop"
+                    comm_Pub.publish(msg)            
+                       	     
+                #print ('detected')
+                vel = geometry_msgs.msg.Twist()
+                if data.image_height/2 > data.blobs[0].y:
+                    vel.linear.x = default_vel
+                    #print('Forward')                                
+                else:
+                    vel.linear.x = -default_vel
+                    #print('Backward')  
+                if data.image_width/2 > data.blobs[0].x:
+                    vel.linear.y = default_vel 
+                    #print('Right')                                
+                else:
+                    vel.linear.y = -default_vel
+                    #print('Left') 
+                vel_Pub.publish(vel)
+        else:
+            if detected:
+                detected = False
                 msg = String()
-                msg.data = "c stop"
-                comm_Pub.publish(msg)            
-                   	     
-            #print ('detected')
-            vel = geometry_msgs.msg.Twist()
-            if data.image_height/2 > data.blobs[0].y:
-                vel.linear.x = default_vel
-                #print('Forward')                                
-            else:
-                vel.linear.x = -default_vel
-                #print('Backward')  
-            if data.image_width/2 > data.blobs[0].x:
-                vel.linear.y = default_vel 
-                #print('Right')                                
-            else:
-                vel.linear.y = -default_vel
-                #print('Left') 
-            vel_Pub.publish(vel)
-    else:
-        if detected:
-            detected = False
-            msg = String()
-            msg.data = "c start"
-            comm_Pub.publish(msg)
+                msg.data = "c start"
+                comm_Pub.publish(msg)
 
 if __name__ == '__main__':
-    rospy.init_node('gotogether_quad')
+    rospy.init_node('quad_blob_tracker')
 
     default_vel = 0.2
 
@@ -84,8 +89,13 @@ if __name__ == '__main__':
     detected = False
     rospy.Subscriber('/blobs', Blobs, blob_detect_callback)
     
+    
+    #Define coupled (follow) or decoupled (autonomous) mode
+    mode = "decoupled"
+    rospy.Subscriber('/behaviour_mode', String, mode_callback)
+    
     #Publish from Drone
-    quad_Pub = rospy.Publisher('/turtlebot_quad', String,queue_size=1)    
+    quad_Pub = rospy.Publisher('/ask_for_point', String,queue_size=1)    
     vel_Pub = rospy.Publisher('/quadrotor/cmd_vel', geometry_msgs.msg.Twist,queue_size=1)
     comm_Pub = rospy.Publisher('/tum_ardrone/com', String,queue_size=1)
 
@@ -96,7 +106,8 @@ if __name__ == '__main__':
     
     rate = rospy.Rate(0.5)
     while not rospy.is_shutdown():
-        if not detected:
+        #Check if there is a blob detected, if not ask for a point
+        if not detected and "de" not in mode:
             quad_msg = String()
             quad_msg.data = "No tag detected"
             quad_Pub.publish(quad_msg)            

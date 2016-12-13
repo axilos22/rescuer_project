@@ -26,6 +26,12 @@
       <layout class="QVBoxLayout" name="rescuerLayout">
        <item>
         <widget class="QLabel" name="rescuerCamLabel">
+         <property name="minimumSize">
+          <size>
+           <width>320</width>
+           <height>180</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>640</width>
@@ -79,6 +85,13 @@
               </property>
              </widget>
             </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="goalStatusLabel">
+              <property name="text">
+               <string>Goal Status</string>
+              </property>
+             </widget>
+            </item>
             <item row="3" column="1">
              <widget class="QLineEdit" name="goalStatusLineEdit">
               <property name="sizePolicy">
@@ -92,14 +105,77 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="goalStatusLabel">
-              <property name="text">
-               <string>Goal Status</string>
-              </property>
-             </widget>
-            </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="armGroupBox">
+            <property name="layoutDirection">
+             <enum>Qt::LeftToRight</enum>
+            </property>
+            <property name="title">
+             <string>Arm predefined poses</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_8">
+             <item row="0" column="2">
+              <widget class="QPushButton" name="raiseButton">
+               <property name="text">
+                <string>Raise</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pickButton">
+               <property name="text">
+                <string>Pick</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QPushButton" name="placeButton">
+               <property name="text">
+                <string>Place</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QPushButton" name="initButton">
+               <property name="text">
+                <string>Init</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="4">
+              <widget class="QPushButton" name="retrieveButton">
+               <property name="text">
+                <string>Retrieve</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="gripperGroupBox">
+            <property name="title">
+             <string>Gripper commands</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="0" column="0">
+              <widget class="QPushButton" name="openButton">
+               <property name="text">
+                <string>Open</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QPushButton" name="closeButton">
+               <property name="text">
+                <string>Close</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -112,6 +188,22 @@
         <widget class="QLabel" name="guiTitleLabel">
          <property name="text">
           <string>Rescuer Project GUI</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QFormLayout" name="formLayout"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="connectButton">
+         <property name="text">
+          <string>Connect</string>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -140,6 +232,24 @@
         </widget>
        </item>
        <item>
+        <layout class="QGridLayout" name="gridLayout_9">
+         <item row="0" column="0">
+          <widget class="QPushButton" name="topViewButton">
+           <property name="text">
+            <string>Top</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="sideViewButton">
+           <property name="text">
+            <string>Side</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QTextEdit" name="consoleTextEdit">
          <property name="maximumSize">
           <size>
@@ -161,6 +271,12 @@
       <layout class="QVBoxLayout" name="droneLayout">
        <item>
         <widget class="QLabel" name="droneCamLabel">
+         <property name="minimumSize">
+          <size>
+           <width>320</width>
+           <height>180</height>
+          </size>
+         </property>
          <property name="maximumSize">
           <size>
            <width>640</width>
@@ -185,26 +301,26 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
-           <widget class="QProgressBar" name="batteryProgressBar">
-            <property name="toolTip">
-             <string>Drone battery level</string>
-            </property>
-            <property name="value">
-             <number>24</number>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QFormLayout" name="formLayout">
-            <property name="fieldGrowthPolicy">
-             <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-            </property>
+           <layout class="QGridLayout" name="gridLayout_5">
+            <item row="1" column="0">
+             <widget class="QLabel" name="rotXYZLabel">
+              <property name="text">
+               <string>PosRot[x,y,z]</string>
+              </property>
+             </widget>
+            </item>
             <item row="0" column="0">
              <widget class="QLabel" name="stateLabel">
               <property name="text">
                <string>State</string>
               </property>
              </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLineEdit" name="rotXYZLineEdit"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="PoselineEdit"/>
             </item>
             <item row="0" column="1">
              <widget class="QSpinBox" name="stateSpinBox">
@@ -219,15 +335,15 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="rotXYZLabel">
-              <property name="text">
-               <string>Rot[x,y,z]</string>
+            <item row="0" column="2">
+             <widget class="QProgressBar" name="batteryProgressBar">
+              <property name="toolTip">
+               <string>Drone battery level</string>
+              </property>
+              <property name="value">
+               <number>24</number>
               </property>
              </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="rotXYZLineEdit"/>
             </item>
            </layout>
           </item>
@@ -236,38 +352,36 @@
        </item>
        <item>
         <widget class="QGroupBox" name="droneControlGroupBox">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="title">
           <string>Drone commands</string>
          </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
          <layout class="QGridLayout" name="droneCmdGridLayout">
-          <item row="1" column="0">
-           <widget class="QPushButton" name="connectButton">
+          <item row="0" column="1">
+           <widget class="QPushButton" name="droneLandButton">
             <property name="text">
-             <string>Connect</string>
+             <string>Land</string>
             </property>
            </widget>
           </item>
           <item row="2" column="1">
            <widget class="QPushButton" name="flatTrimButton">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="toolTip">
              <string>request to AR-Drone to re-calibrate its rotation estimates assuming that it is on a flat surface.</string>
             </property>
             <property name="text">
              <string>Flat Trim</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QPushButton" name="switchCamPushButton">
-            <property name="text">
-             <string>SwitchCam</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="droneLandButton">
-            <property name="text">
-             <string>Land</string>
             </property>
            </widget>
           </item>
@@ -281,13 +395,6 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
-           <widget class="QPushButton" name="resetButton">
-            <property name="text">
-             <string>Reset</string>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="0">
            <widget class="QPushButton" name="autoHoverButton">
             <property name="toolTip">
@@ -298,8 +405,19 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
-           <widget class="QLineEdit" name="PoselineEdit"/>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="switchCamPushButton">
+            <property name="text">
+             <string>SwitchCam</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QPushButton" name="resetButton">
+            <property name="text">
+             <string>Reset</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -309,18 +427,11 @@
          <property name="title">
           <string>Autopilot commands</string>
          </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="goToLineEdit">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="locale">
-             <locale language="C" country="AnyCountry"/>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
+          <item row="6" column="2">
            <widget class="QPushButton" name="rawCmdButton">
             <property name="enabled">
              <bool>false</bool>
@@ -337,17 +448,34 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="0" colspan="2">
-           <widget class="QLineEdit" name="rawCmdLineEdit"/>
-          </item>
-          <item row="4" column="0">
+          <item row="6" column="0">
            <widget class="QLabel" name="rwCmdLabel">
             <property name="text">
              <string>Raw command text:</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
+          <item row="6" column="1">
+           <widget class="QLineEdit" name="rawCmdLineEdit">
+            <property name="text">
+             <string>goto 0 0 1 0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="goToLineEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="locale">
+             <locale language="C" country="AnyCountry"/>
+            </property>
+            <property name="text">
+             <string>0.0,0.0,1.0,0.0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
            <widget class="QPushButton" name="goToButton">
             <property name="enabled">
              <bool>false</bool>
@@ -357,7 +485,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
+          <item row="2" column="2">
            <widget class="QCheckBox" name="autopilotCheckbox">
             <property name="enabled">
              <bool>false</bool>

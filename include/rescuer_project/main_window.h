@@ -16,6 +16,7 @@
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Float32.h>
+#include <std_msgs/Float64.h>
 #include <std_srvs/Empty.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/image_encodings.h>
@@ -29,6 +30,7 @@
 #include <QStringList>
 #include <QSpinBox>
 #include <QPalette>
+#include <QTime>
 /*Open-CV*/
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -45,7 +47,7 @@
 #include <ui_main_window.h>
 #include <rescuer_project/lineeditteleop.h>
 
-#define SIMULATOR 1 //1 for quadrotor/cmd_vel
+#define SIMULATOR 1 //1 for /quadrotor/cmd_vel
 
 namespace rescuer_project {
 
@@ -65,6 +67,7 @@ public:
     QVector<float> formatStringData(const QString inData,const QChar separator=',');
     bool isConnected() const;
     void sendAutopilotCommand(const QString cmd);
+    void delay(int seconds);
 
 public slots:
     void droneTakeOff();
@@ -100,8 +103,20 @@ public slots:
     void autopilotRawCmd();
     void autopilotActivated(bool activation);
     void rescuerStop();
+    void viewFromTop();
+    void viewFromSide();
     /*Behaviors*/
     void stateChanged(int newState);
+    /*Pick and place*/
+    void setArmPose(QVector<float>);
+    void initPose();
+    void pickPose();
+    void raisePose();
+    void placePose();
+    void retrievePose();
+    void openGripper();
+    void closeGripper();
+
 
 signals:
     void batteryUpdated(int percent);
@@ -127,6 +142,14 @@ protected:
     ros::Publisher* _baseGoalPub;
     ros::Publisher* _autoPilotPub;
     ros::Publisher* _baseCmdVelPub;
+    ros::Publisher* _changeModePub;
+    ros::Publisher* _armJoint1_Pub;
+    ros::Publisher* _armJoint2_Pub;
+    ros::Publisher* _armJoint4_Pub;
+    ros::Publisher* _armJoint6_Pub;
+    ros::Publisher* _gripperFinger1_Pub;
+    ros::Publisher* _gripperFinger2_Pub;
+    ros::Publisher* _gripperFinger3_Pub;
 
     //cam
     cv::Mat _conversionMat;

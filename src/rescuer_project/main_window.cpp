@@ -48,6 +48,18 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(this,SIGNAL(camRescuerImgUpdated(QPixmap)),_ui.rescuerCamLabel,SLOT(setPixmap(QPixmap)));
     connect(this,SIGNAL(rescuerPoseUpdated(QVector<float>)),this,SLOT(updateRescuerPoseValues(QVector<float>)));
     connect(_ui.goalButton,SIGNAL(pressed()),this,SLOT(setRescuerGoal()));
+    // arm
+    connect(_ui.initButton,SIGNAL(pressed()),this,SLOT(initPose()));
+    connect(_ui.pickButton,SIGNAL(pressed()),this,SLOT(pickPose()));
+    connect(_ui.placeButton,SIGNAL(pressed()),this,SLOT(placePose()));
+    connect(_ui.raiseButton,SIGNAL(pressed()),this,SLOT(raisePose()));
+    connect(_ui.retrieveButton,SIGNAL(pressed()),this,SLOT(retrievePose()));
+    // gripper
+    connect(_ui.openButton,SIGNAL(pressed()),this,SLOT(openGripper()));
+    connect(_ui.closeButton,SIGNAL(pressed()),this,SLOT(closeGripper()));
+    //views
+    connect(_ui.topViewButton,SIGNAL(pressed()),this,SLOT(viewFromTop()));
+    connect(_ui.sideViewButton,SIGNAL(pressed()),this,SLOT(viewFromSide()));
 
     //Adding teleoperator
     _teleop = new LineEditTeleop;
@@ -84,7 +96,7 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(_ui.autopilotCheckbox,SIGNAL(toggled(bool)),this,SLOT(autopilotActivated(bool)));
     connect(this,SIGNAL(autopilotUpdated(bool)),this,SLOT(changeTakeOffButton()));
     //state behavior connection
-    connect(_ui.stateComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(stateChanged(int)));
+    connect(_ui.stateComboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(stateChanged(int)));    
 }
 
 void MainWindow::testCallback(const std_msgs::String::ConstPtr& msg) {
@@ -314,10 +326,26 @@ void MainWindow::connectWithDrone()
     _baseGoalPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::PoseStamped>("/move_base_simple/goal",1));   
     _baseCmdVelPub = new ros::Publisher(getNodeHandle().advertise<geometry_msgs::Twist>("/cmd_vel_mux/input/teleop",1));
     _autoPilotPub = new ros::Publisher(getNodeHandle().advertise<std_msgs::String>("/tum_ardrone/com",1));
+    _changeModePub = new ros::Publisher(getNodeHandle().advertise<std_msgs::String>("/behaviour_mode",1));
+    _armJoint1_Pub = new ros::Publisher(getNodeHandle().advertise<std_msgs::Float64>("/gwam/j1_position_controller/command",1));
+    _armJoint2_Pub = new ros::Publisher(getNodeHandle().advertise<std_msgs::Float64>("/gwam/j2_position_controller/command",1));
+    _armJoint4_Pub = new ros::Publisher(getNodeHandle().advertise<std_msgs::Float64>("/gwam/j4_position_controller/command",1));
+    _armJoint6_Pub = new ros::Publisher(getNodeHandle().advertise<std_msgs::Float64>("/gwam/j6_position_controller/command",1));
+    _gripperFinger1_Pub = new ros::Publisher(getNodeHandle().advertise<std_msgs::Float64>("/gwam/bh_j12_position_controller/command",1));
+    _gripperFinger2_Pub = new ros::Publisher(getNodeHandle().advertise<std_msgs::Float64>("/gwam/bh_j22_position_controller/command",1));
+    _gripperFinger3_Pub = new ros::Publisher(getNodeHandle().advertise<std_msgs::Float64>("/gwam/bh_j32_position_controller/command",1));
     /*Pub management*/
     _pubs.append(*_cmdVelPub);
     _pubs.append(*_baseGoalPub);
     _pubs.append(*_autoPilotPub);  
+    _pubs.append(*_changeModePub);
+    _pubs.append(*_armJoint1_Pub);
+    _pubs.append(*_armJoint2_Pub);
+    _pubs.append(*_armJoint4_Pub);
+    _pubs.append(*_armJoint6_Pub);
+    _pubs.append(*_gripperFinger1_Pub);
+    _pubs.append(*_gripperFinger2_Pub);
+    _pubs.append(*_gripperFinger3_Pub);
     setIsConnected(true);
     log("Drone connected.");
 }
@@ -408,7 +436,7 @@ void MainWindow::droneDown()
 
 void MainWindow::droneForward()
 {
-    log("Drone forward");
+    //log("Drone forward");
     geometry_msgs::Twist cmd;
     cmd.linear.x = m_defaultSpeed;
     _cmdVelPub->publish(cmd);
@@ -417,7 +445,7 @@ void MainWindow::droneForward()
 
 void MainWindow::droneBackward()
 {
-    log("Drone backward");
+    //log("Drone backward");
     geometry_msgs::Twist cmd;
     cmd.linear.x = -m_defaultSpeed;
     _cmdVelPub->publish(cmd);
@@ -426,7 +454,7 @@ void MainWindow::droneBackward()
 
 void MainWindow::droneLeft()
 {
-    log("Drone left");
+    //log("Drone left");
     geometry_msgs::Twist cmd;
 //    cmd.angular.z = m_defaultSpeed;
     cmd.linear.y = m_defaultSpeed;
@@ -436,7 +464,7 @@ void MainWindow::droneLeft()
 
 void MainWindow::droneRight()
 {
-    log("Drone right");
+    //log("Drone right");
     geometry_msgs::Twist cmd;
 //    cmd.angular.z = -m_defaultSpeed;
     cmd.linear.y = -m_defaultSpeed;
@@ -592,15 +620,23 @@ void MainWindow::rescuerStop()
 
 void MainWindow::stateChanged(int newState)
 {
+    std_msgs::String changeModeCommand;
     switch (newState) {
     case 0:
         log("default");
         break;
     case 1:
-        log("coupled");
+        log("coupled");        
+        //QString formattedOrder = "c "+cmd;
+        changeModeCommand.data = "coupled";
+        _changeModePub->publish(changeModeCommand);
+        ros::spinOnce();
         break;
     case 2:
         log("decoupled");
+        changeModeCommand.data = "decoupled";
+        _changeModePub->publish(changeModeCommand);
+        ros::spinOnce();
         break;
     case 3:
         log("assistance");
@@ -666,6 +702,127 @@ void MainWindow::goalStatusCallback(const move_base_msgs::MoveBaseActionResult &
 {
     QString result = QString::fromStdString(msg.status.text);
     _ui.goalStatusLineEdit->setText(result);
+
+}
+
+void MainWindow::setArmPose(QVector<float> pos){
+    std_msgs::Float64 joint_1, joint_2, joint_4, joint_6;
+    joint_1.data = pos.at(0);
+    joint_2.data = pos.at(1);
+    joint_4.data = pos.at(2);
+    joint_6.data = pos.at(3);
+    _armJoint1_Pub->publish(joint_1);
+    _armJoint2_Pub->publish(joint_2);
+    _armJoint4_Pub->publish(joint_4);
+    _armJoint6_Pub->publish(joint_6);
+    ros::spinOnce();
+}
+
+void MainWindow::initPose()
+{
+    QVector<float> pose;
+    pose.append(0.0);   //arm joint 1 position
+    pose.append(0.0);   //arm joint 2 position
+    pose.append(0.0);   //arm joint 4 position
+    pose.append(0.0);  //arm joint 6 position
+    setArmPose(pose);
+}
+
+void MainWindow::pickPose()
+{
+    QVector<float> pose;
+    pose.append(0.0);   //arm joint 1 position
+    pose.append(0.0);   //arm joint 2 position
+    pose.append(2.0);   //arm joint 4 position
+    pose.append(-1.0);  //arm joint 6 position    
+    setArmPose(pose);
+    delay(20);
+    pose[1] = 0.2;
+    setArmPose(pose);
+}
+
+void MainWindow::raisePose()
+{
+    QVector<float> pose;
+    pose.append(0.0);   //arm joint 1 position
+    pose.append(0.0);   //arm joint 2 position
+    pose.append(0.5);   //arm joint 4 position
+    pose.append(-1.0);  //arm joint 6 position
+    setArmPose(pose);
+    delay(20);
+    pose[1] = 0.3;
+    pose[4] = 0.0;
+    setArmPose(pose);
+}
+
+void MainWindow::placePose()
+{
+    QVector<float> pose;
+    pose.append(0.0);   //arm joint 1 position
+    pose.append(0.5);   //arm joint 2 position
+    pose.append(0.5);   //arm joint 4 position
+    pose.append(-0.3);  //arm joint 6 position
+    setArmPose(pose);
+    delay(20);
+    pose[0] = -0.7;
+    setArmPose(pose);
+}
+
+void MainWindow::retrievePose()
+{
+    QVector<float> pose;
+    pose.append(0.0);   //arm joint 1 position
+    pose.append(0.5);   //arm joint 2 position
+    pose.append(0.5);   //arm joint 4 position
+    pose.append(-0.3);  //arm joint 6 position
+    setArmPose(pose);
+    delay(20);
+    pose[1] = 0.0;
+    setArmPose(pose);
+}
+
+void MainWindow::closeGripper()
+{
+    std_msgs::Float64 finger_1, finger_2, finger_3;
+    finger_1.data = 1.0;
+    finger_2.data = 1.0;
+    finger_3.data = 1.1;
+    _gripperFinger1_Pub->publish(finger_1);
+    _gripperFinger2_Pub->publish(finger_2);
+    _gripperFinger3_Pub->publish(finger_3);
+    ros::spinOnce();
+}
+
+void MainWindow::openGripper()
+{
+    std_msgs::Float64 finger_1, finger_2, finger_3;
+    finger_1.data = 0.0;
+    finger_2.data = 0.0;
+    finger_3.data = 0.0;
+    _gripperFinger1_Pub->publish(finger_1);
+    _gripperFinger2_Pub->publish(finger_2);
+    _gripperFinger3_Pub->publish(finger_3);
+    ros::spinOnce();
+}
+
+void MainWindow::viewFromTop()
+{
+    autopilotClear();
+    QString formattedOrder = "goto -5.0 4.7 2.5 0.0";
+    sendAutopilotCommand(formattedOrder);
+}
+
+void MainWindow::viewFromSide()
+{
+    autopilotClear();
+    QString formattedOrder = "goto -5.5 4.0 1.0 0.0";
+    sendAutopilotCommand(formattedOrder);
+}
+
+void MainWindow::delay(int seconds){
+    QTime dieTime= QTime::currentTime().addSecs(seconds);
+    while (QTime::currentTime() < dieTime)
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 
 }
 

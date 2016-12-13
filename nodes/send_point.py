@@ -44,7 +44,7 @@ def comm_callback(data):
         
 
 if __name__ == '__main__':
-    rospy.init_node('gotogether')
+    rospy.init_node('send_point')
 
 #==============================================================================
 #     #Define goal for mobile base
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 #==============================================================================
     
     #Subscribe from Turtlebot
-    rospy.Subscriber('/turtlebot_quad', String, comm_callback)  
+    rospy.Subscriber('/ask_for_point', String, comm_callback)  
     
     listener = tf.TransformListener()
     

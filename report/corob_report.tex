@@ -267,7 +267,7 @@ such fluctuations can make the system unstable.
 \end{figure}
 
 
-Unfortunately the simulation of the drone does not include this on-board tracking. To accurately represent the real system we used the \verb!cmvision! ROS package to detect and track the top of the Turtlebot. We define the color to track and the \verb!cmvision! package provides us the image location of the detected blobs with this color. The node we created takes this position and commands the drone to keep the blob centred. The top of the Turtlebot is black, as well as other elements in the simulated world, but the tracking proved to be reliable when the Turtlebot is navigating to a defined goal.
+Unfortunately the simulation of the drone does not include this on-board tracking. To accurately represent the real system we used the \verb!cmvision! ROS package to detect and track the top of the Turtlebot. We define the color to track and the \verb!cmvision! package provides us the image location of the detected blobs with this color. The \textit{quad blob tracker} node we created takes this position and commands the drone to keep the blob centred. The top of the Turtlebot is black, as well as other elements in the simulated world, but the tracking proved to be reliable when the Turtlebot is navigating to a defined goal.
 
 
 \begin{figure}[ht!]%
@@ -282,7 +282,7 @@ Unfortunately the simulation of the drone does not include this on-board trackin
 
 The visual tracking allows the drone to follow the mobile base when it is in line of sight. In order to get to the mobile base from another location or to position the drone to supervise a task, we implemented a goto command with the help of the \verb!tum_ardrone! package.
 
-As explained previously the \verb!tum_ardrone! package provides a PID controller and a position estimation, which the controller takes as the current position of the drone. The position estimation was found to not be very reliable on the height of the drone, causing the platform to drift upwards. We created an intermediary node to take in the position estimation and replace the height element with the navigation information provided directly by the drone. This proved to stabilize the drone more robustly.
+As explained previously the \verb!tum_ardrone! package provides a PID controller and a position estimation, which the controller takes as the current position of the drone. The position estimation was found to not be very reliable on the height of the drone, causing the platform to drift upwards. We created an intermediary node \textit{replace z} to take in the position estimation and replace the height element with the navigation information provided directly by the drone. This proved to stabilize the drone more robustly.
 
 
 
