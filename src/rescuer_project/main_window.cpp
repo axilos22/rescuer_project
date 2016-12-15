@@ -11,7 +11,7 @@ MainWindow::MainWindow():rqt_gui_cpp::Plugin(),
     m_autopilotActivated(false),
     m_droneState(0),
     rescuer_linearVel(0.2),
-    rescuer_angularVel(0.5)
+    rescuer_angularVel(0.7)
 {
     setObjectName("rescuer_gui");
 }
@@ -58,6 +58,8 @@ void MainWindow::initPlugin(qt_gui_cpp::PluginContext& context)
     connect(_ui.openButton,SIGNAL(pressed()),this,SLOT(openGripper()));
     connect(_ui.closeButton,SIGNAL(pressed()),this,SLOT(closeGripper()));
     //views
+    _ui.topViewButton->setVisible(false);
+    _ui.sideViewButton->setVisible(false);
     connect(_ui.topViewButton,SIGNAL(pressed()),this,SLOT(viewFromTop()));
     connect(_ui.sideViewButton,SIGNAL(pressed()),this,SLOT(viewFromSide()));
 
@@ -640,6 +642,8 @@ void MainWindow::stateChanged(int newState)
         break;
     case 3:
         log("assistance");
+        _ui.topViewButton->setVisible(true);
+        _ui.sideViewButton->setVisible(true);
         break;
     default:
         log("? state");
@@ -761,7 +765,7 @@ void MainWindow::placePose()
     pose.append(0.0);   //arm joint 1 position
     pose.append(0.5);   //arm joint 2 position
     pose.append(0.5);   //arm joint 4 position
-    pose.append(-0.3);  //arm joint 6 position
+    pose.append(-0.2);  //arm joint 6 position
     setArmPose(pose);
     delay(20);
     pose[0] = -0.7;
@@ -774,7 +778,7 @@ void MainWindow::retrievePose()
     pose.append(0.0);   //arm joint 1 position
     pose.append(0.5);   //arm joint 2 position
     pose.append(0.5);   //arm joint 4 position
-    pose.append(-0.3);  //arm joint 6 position
+    pose.append(-0.2);  //arm joint 6 position
     setArmPose(pose);
     delay(20);
     pose[1] = 0.0;
