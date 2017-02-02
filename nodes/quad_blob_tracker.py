@@ -6,7 +6,7 @@ import math
 import tf
 import geometry_msgs.msg
 import std_srvs.srv
-from std_msgs.msg import String, Empty
+from std_msgs.msg import String, Empty, Float32
 from cmvision.msg import Blobs, Blob
 
 #==============================================================================
@@ -33,6 +33,8 @@ def mode_callback(data):
  
 def blob_detect_callback(data):
     global detected
+    track_mode = Float32()
+    track_mode.data = -1.0
     if "de" not in mode:
         if data.blob_count > 0:        
             if data.blobs[0].name == 'Black':
@@ -58,12 +60,14 @@ def blob_detect_callback(data):
                     vel.linear.y = -default_vel
                     #print('Left') 
                 vel_Pub.publish(vel)
+                track_mode.data = 1.0
         else:
             if detected:
                 detected = False
                 msg = String()
                 msg.data = "c start"
                 comm_Pub.publish(msg)
+        track_modePub.publish(track_mode)
 
 if __name__ == '__main__':
     rospy.init_node('quad_blob_tracker')
@@ -98,6 +102,9 @@ if __name__ == '__main__':
     quad_Pub = rospy.Publisher('/ask_for_point', String,queue_size=1)    
     vel_Pub = rospy.Publisher('/quadrotor/cmd_vel', geometry_msgs.msg.Twist,queue_size=1)
     comm_Pub = rospy.Publisher('/tum_ardrone/com', String,queue_size=1)
+
+    #Show tracking mode for plot
+    track_modePub = rospy.Publisher('/tracking_mode', Float32,queue_size=1)
 
     rospy.sleep(0.5)
     auto_start = String()

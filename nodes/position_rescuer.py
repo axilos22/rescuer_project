@@ -14,7 +14,7 @@ if __name__ == '__main__':
    
     base_pos = rospy.Publisher('/mobile_base/abs_pos', geometry_msgs.msg.Pose2D,queue_size=1)
 
-    rate = rospy.Rate(1.0)
+    rate = rospy.Rate(20.0)
     while not rospy.is_shutdown():
         try:
 	    (trans,rot) = listener.lookupTransform('/mobile_map', '/base_footprint', rospy.Time(0))

@@ -34,7 +34,7 @@ def comm_callback(data):
         
         comm_Pub.publish("c clearCommands")
         
-        rospy.sleep(0.6)
+        #rospy.sleep(0.6)
         pose=String()
         pose.data = "c goto " + "{0:.2f}".format(-trans[1])+ " {0:.2f}".format(trans[0]) + " {0:.2f}".format(trans[2]) + " {0:.2f}".format(y)
         comm_Pub.publish(pose)        

@@ -11,6 +11,7 @@
 \usepackage{listings}
 \usepackage{verbatim}
 \usepackage{subfig}
+\usepackage[a4paper, total={6in, 9in}]{geometry}
 
 %PARAM
 %Linux
@@ -92,7 +93,7 @@ order to see what the system is doing in real time.
 \subsubsection{Git}
 To deliver a complete solution, a lot of software development was required. In order to keep
 the code maintained and keep track of changes in code; we used \href{https://git-scm.com/}{git} as a version control system
- (VCS).
+ (VCS). The repository can be found at \href{https://github.com/axilos22/rescuer_project}{rescuer\_project}.
 
 \subsubsection{ROS}
 \href{http://www.ros.org}{ROS} stands for Robotic Operating System, although is not technically an OS. ROS is a middleware that provides an easy to use communication platform for different software and hardware elements. ROS was a very useful tool to implement cooperation in our system, particularly the network communication among robots.
@@ -131,7 +132,7 @@ created called rqt (ROS Qt).
 \subsection{Mobile base}
 \begin{figure}[ht]	
 \centering
-\includegraphics[height=5cm]{turtlebot.png}
+\includegraphics[height=3cm]{turtlebot.png}
 \caption{The Turtlebot}
 \end{figure}
 
@@ -152,7 +153,7 @@ has an on-board tracking system, allowing a decent tracking without latency issu
 
 \begin{figure}[ht]	
 \centering
-\includegraphics[height=3cm]{arDroneGpsEdition.png}
+\includegraphics[height=2cm]{arDroneGpsEdition.png}
 \caption{AR Drone v2}
 \end{figure}
 
@@ -161,14 +162,15 @@ one of them called \href{"http://wiki.ros.org/tum_ardrone"}{"tum\_ardrone"} in p
 the driver package: \href{"https://github.com/AutonomyLab/ardrone_autonomy"}
 {"ardrone\_autonomy"}.
 
-\subsection{Cooperative behaviour}
-As the two robots have to cooperate to perform their common goal, it was required to implement
-cooperative behaviours on the system. During the conceptualization of the project we established different
-cooperative behaviours that the system should be able to manage:
+\subsection{Cooperative behaviours}
+As the two robots have to cooperate to perform their common goal, it was required to implement different cooperative behaviours
+on the system. During the conceptualization of the project we established different
+ behaviours that the system should be able to manage: decoupled, coupled and supervisor mode. Figure \ref{fig:Coop} displays a diagram of these behaviours.
 
 \begin{figure}[ht]	
 \includegraphics[height=7cm]{cooperativeModes.png}
-\caption{Cooperative modes states map}
+\caption{Cooperative behaviours states map}
+\label{fig:Coop}
 \end{figure}
 
 \subsubsection{Default mode}
@@ -176,16 +178,15 @@ The default mode is the one in which the system start. No particular behaviour i
 robots should establish connection and start exchanging their respective localization and status data.
 
 \subsubsection{Coupled mode}
-In this mode, the navigation of the two robots is linked, the mobile-base robot has asked the drone to 
-rally on top of its position and the drone is tracking the mobile base underneath. From this point forward, if the mobile base moves, the drone remains on top and move along with it.
+In this mode the two robots communicate to reach a user defined goal. The mobile base handles the path planning and navigation, and the drone follows. The drone tracks the mobile base either by requesting the mobile base location, or by visual tracking. From this point forward, if the mobile base moves, the drone remains on top and moves along with it.
 
 \subsubsection{Decoupled mode}
 This mode is the same as default mode in terms of behaviour. The only difference is that the default mode
 is not accessed any more after start-up. When the system enters the decoupled mode, the two robots movements
 are decoupled and can be separately controlled, either by tele-operation or any other method.
 
-\subsubsection{Assistance mode}
-The assistance mode is a semi-operated mode. In this mode, the drone will adopt a set of pre-defined
+\subsubsection{Supervisor mode}
+The supervisor mode is a semi-operated mode. In this mode, the drone will adopt a set of pre-defined
 positions around the mobile base. For instance in the case of navigation, the drone will move 
 among a semi-circle (or full circle) around the mobile platform, allowing the 
 operator to have better awareness of the situation.
@@ -196,7 +197,7 @@ operator to have better awareness of the situation.
 \caption{Map of the assistance behaviour}
 \end{figure}
 
-Additional behaviours can be added into the assistance mode to be even more effective, for
+Additional behaviours can be added into the supervisor mode to be even more effective, for
 instance adopting a lateral camera position while the robot is grasping an object. This would
 allow the operator to have a real-time visual feedback on the action. Another behaviour
 could be ``forward scouting" allowing the drone to explore the area before engaging the 
@@ -209,7 +210,7 @@ In order to debug and test the cooperative behaviours without having to worry ab
 
 The Turtlebot has plenty of support in the community, and did not present any major difficulties to use it in the simulation. On the other hand, the AR Drone's simulator package (\verb!tum_sim!) was made originally for the Hydro version of ROS, one previous to the one we are using (Indigo). It was required to do some slight modifications to the SDF description files to make it compatible with our system.
 
-Once we had each robot working separately on Gazebo, we had to be careful with topic and frame names when we launched them together. The namespace `quadrotor' was used to launch the drone model and related nodes. By changing the topic names we had to modify the source code of the \verb!tum_sim! package again, since it was not possible to remap the sensor information topic names used to stabilize the drone.
+Once we had each robot working separately on Gazebo, we had to be careful with topic and frame names when we launched them together. The namespace `quadrotor' was used to launch the drone model and related nodes. Changing the topic names caused the simulated drone to become unstable. The \verb!tum_sim! gazebo plugin had to be modified directly in the source code, since it was not possible to remap the topic names related to sensor information. The simulated drone behaved in a similar way to the real drone once the correct information was being received.
 
 \subsection{Individual Robot Capabilities}
 In order to have smart behaviours, such that the operator does not need to be concerned with basic commands, some autonomous capabilities were implemented on both robotic platforms. Mainly autonomous navigation of unknown environments for the mobile base, and tracking, both a visual pattern and a given point, for the drone.
@@ -229,7 +230,7 @@ The Gmapping ROS package was used to create a map of the environment as the Turt
     \label{fig:gmapping}
 \end{figure}
 
-Navigating through the environment was done through the Navigation ROS package, allowing the robot to reach a defined goal, while avoiding obstacles. A special plugin  was used, which creates a Voronoi diagram of the map given by Gmapping, to prioritize the path with the most clearance between obstacles. We can see in Figure \ref{fig:globalPath} an example of the planned path from the starting point [0,0] to the goal [5,3]. The path is highlighted in green, the obstacles (in yellow) are surrounded by a buffer area where the robot might collide; and the blue lines are the Voronoi diagram, where the robot tries to go on.
+Navigating through the environment was done through the Navigation ROS package, allowing the robot to reach a defined goal while avoiding obstacles. A special costmap plugin was used ( \href{https://github.com/MonicaArias/voronoi_navigation}{voronoi\_navigation} )  , which creates a Voronoi diagram of the map given by Gmapping. This allows the system to prioritize the path with the most clearance between obstacles. We can see in Figure \ref{fig:globalPath} an example of the planned path from the starting point [0,0] to the goal [5,3]. The path is highlighted in green, the obstacles (in yellow) are surrounded by a buffer area where the robot might collide; and the blue lines are the Voronoi diagram where the robot tries to go on.
 
 \begin{figure}[h!]
 	\centering
@@ -242,7 +243,9 @@ One of the defined cooperative behaviours is that the drone follows the mobile b
 
 
 \subsubsection{Quadrotor}
-The first achievement to make was to have visual tracking of the drone. For this task, we used 
+We implemented two modes of tracking for the drone, visual and point tracking.
+
+For visual tracking we used 
 the on-board control algorithm of the drone. This had many advantages: 
 \begin{itemize}
 \item The implementation was facilitated: activating the tracking on the drone can be done by 
@@ -261,18 +264,18 @@ such fluctuations can make the system unstable.
 
 \begin{figure}[ht]
 	\centering
-    \includegraphics[height=6cm]{visualTracking.png}
+    \includegraphics[height=4cm]{visualTracking.png}
     \caption{AR Drone tracking a visual pattern}
     \label{fig:visualTracking}
 \end{figure}
 
 
-Unfortunately the simulation of the drone does not include this on-board tracking. To accurately represent the real system we used the \verb!cmvision! ROS package to detect and track the top of the Turtlebot. We define the color to track and the \verb!cmvision! package provides us the image location of the detected blobs with this color. The \textit{quad blob tracker} node we created takes this position and commands the drone to keep the blob centred. The top of the Turtlebot is black, as well as other elements in the simulated world, but the tracking proved to be reliable when the Turtlebot is navigating to a defined goal.
+Unfortunately the simulation of the drone does not include this on-board tracking. To accurately represent the real system we used the \verb!cmvision! ROS package to detect and track the top of the Turtlebot. We define the color to track and the \verb!cmvision! package provides us the image location of the detected blobs with this color. The \textit{quad\_blob\_tracker} node we created takes this position and commands the drone to keep the blob centred. The top of the Turtlebot is black, as well as other elements in the simulated world, but the tracking proved to be reliable when the Turtlebot is navigating to a defined goal.
 
 
 \begin{figure}[ht!]%
 	\centering
-    \subfloat[Drone's bottom camera]{{\includegraphics[height=3.4cm]{simTracking.png} }}  
+    \subfloat[Drone's bottom camera view]{{\includegraphics[height=3.4cm]{simTracking.png} }}  
     \qquad  
     \subfloat[Drone's position]{{\includegraphics[height=3.4cm]{simTracking2.png}}}
     \caption{AR Drone tracking the top of the Turtlebot}
@@ -282,9 +285,31 @@ Unfortunately the simulation of the drone does not include this on-board trackin
 
 The visual tracking allows the drone to follow the mobile base when it is in line of sight. In order to get to the mobile base from another location or to position the drone to supervise a task, we implemented a goto command with the help of the \verb!tum_ardrone! package.
 
-As explained previously the \verb!tum_ardrone! package provides a PID controller and a position estimation, which the controller takes as the current position of the drone. The position estimation was found to not be very reliable on the height of the drone, causing the platform to drift upwards. We created an intermediary node \textit{replace z} to take in the position estimation and replace the height element with the navigation information provided directly by the drone. This proved to stabilize the drone more robustly.
+As explained previously, the \verb!tum_ardrone! package provides a PID controller and a position estimation, which the controller takes as the current position of the drone. On the real drone it is necessary to have various keypoints on the front camera image to avoid drifting, since PTAM is used to estimate the position.
 
+These keypoints are not necessary in the simulation, the Extended Kalman Filter is accurate enough, only the estimated height of the drone is not very reliable, and causes the platform to drift upwards. We created an intermediary node, \textit{replace\_z}, to take in the position estimation and replace the height element with the ground truth information provided by gazebo. This proved to stabilize the drone more robustly.
 
+Once the drone is capable to go to a commanded position we can track a reference frame. In Figure \ref{fig:posT} we can see the drone approaches the tracked frame.
+
+\begin{figure}[ht!]%
+	\centering
+    \subfloat[]{{\includegraphics[height=3cm]{frame_tracking3.png}}}  
+    \qquad  
+    \subfloat[]{{\includegraphics[height=3cm]{frame_tracking2.png} }}  
+    \caption{Position tracking}
+    \label{fig:posT}
+\end{figure}
+
+\begin{figure}[ht!]%
+	\centering
+    \subfloat[Version 1.0]{{\includegraphics[width=10cm]{guiSketch.png} \label{fig:gui1}}}  
+    \qquad  
+    \subfloat[Version 2.0]{{\includegraphics[width=10cm]{guiV2.png} }}  
+    \qquad  
+    \subfloat[Version 3.0]{{\includegraphics[width=10cm]{guiV3.png} \label{fig:gui3}}}  
+    \caption{GUI development}
+    \label{fig:gui}
+\end{figure}
 
 \subsection{GUI programming}
 Programming the GUI was facilitated by the rqt package. Setting up the interface was, however,
@@ -294,77 +319,200 @@ all the ROS useful features: subscriber, publisher, message types, etc.
 Then this nodelet acts like a Qt blanc page, allowing us to program the GUI we want. It is 
 important to note that the QWidgets and the ROS services run on a different thread, implying some limitations because a ROS Callback
 \href{http://wiki.ros.org/rqt/Tutorials/Writing\%20a\%20C\%2B\%2B\%20Plugin}
-{can't access a Qt element}.
+{cannot access a Qt element}.
 
-Once the first test widget was operational, the development of the GUI could start: we had a 
-first sketch of what we wanted so we developed the GUI along with the features we were
-testing on the physical robot.
-\centerFigure{guiSketch.png}{GUI version 0.1}
+With the first test widget operational, the development of the GUI started based on a first sketch, shown on Figure \ref{fig:gui1}. The development of the GUI followed the features we were
+testing on the physical robots.
 
-Then along with the functionalities, the GUI became more complex and diversified.
-\centerFigure{guiV2.png}{GUI version 2.0}
+In Figure \ref{fig:gui3} we can see the final version of the GUI. It contains the following elements:
 
-In the final version of the GUI, an autopilot has been added, creating a new section in the 
-GUI. This autopilot is based on the \verb!tum_ardrone! ROS package.
-\centerFigure{guiV3.png}{GUI version 3.0}
+\begin{itemize}
+
+	\item Mobile Base Control - Located on the left hand side panel
+	\begin{itemize}
+		\item Mobile base camera
+		\item Position provided by the \textit{position\_rescuer} node, that transforms the reference frame from Gmapping into a point
+		\item Goal to be sent to the Navigation package
+		
+	\end{itemize}
+	
+	\item Drone Control - Located on the right side of the panel
+	\begin{itemize}
+		\item Battery level
+		\item Drone camera, either bottom or front camera, can be swithced with the 'SwitchCam' button below
+		\item Teleop for both robots
+		\begin{itemize}
+			\item For the mobile base:
+			\begin{itemize}
+				\item "W" is forward, "X" is backwards
+				\item "D" is turn right, "A" is turn left			
+			\end{itemize}
+
+			\item For the drone:
+			\begin{itemize}
+				\item Arrow up is forward, arrow down is backwards
+				\item Arrow right is move to the right, arrow left is move to the left (there is no rotation because the state estimation depends on a fixed viewpoint)
+				\item Page up is upwards, page down is downwards
+			\end{itemize}	
+		\end{itemize}
+
+		\item Drone commands, including take off and landing
+		\item Autopilot commands, to go to a given point with the \verb!tum_ardrone! package	
+	\end{itemize}
+	
+	\item Behaviour mode, to be able to select between decoupled, coupled and supervised modes
+	
+	\item Console, to display information and debugging messages to the screen
+
+
+\end{itemize}
+
+
+
+
+
 
 \begin{figure}[ht]	
-%Image: #1
 \centering
 \includegraphics[width=14cm]{communicationArchitecture.png}
-\caption{Communication architecture}
+\caption{GUI Communication architecture}
 \end{figure}
 
-\subsection{Robots interactions}
+
+\subsection{Coupled mode interactions}
+
+For the most part both robots cooperate without direct communication. The drone provides a better point of view of what the mobile base is doing, and  the human operator functions as the missing link to achieve one common goal. However, in the coupled mode both robots are expected to coordinate between them to arrive to a given point.  
+
+The diagram of the implementation can be seen in Figure \ref{fig:coupled}. The mobile base, in this case a Turtlebot, handles the path planning and navigation part of the problem. As the mobile base moves toward the goal it broadcast a frame 1 meter above its location. 
+
+The drone has to figure out how to follow the mobile base. If it can detect the mobile base visually, it will do visual tracking. And if the mobile base is out of sight the drone will send a message to the mobile base asking for a point to go to. 
+
+When the mobile base receives this request it performs the frame transformation from the frame it is broadcasting above itself, to the odometry frame of the drone; and sends this point to the drone's PID controller.
+
+\begin{figure}[ht]	
+\centering
+\includegraphics[width=12cm]{communication.png}
+\caption{Coupled mode behaviour}
+\label{fig:coupled}
+\end{figure}
 
 
-As the cooperation of robots could not be achieved before having total control over the two robots, 
-we started programming the interactions toward the end of the project.
-
-Then to have more robot interaction, it was necessary to make the two robots communicate.
-The first interaction we wanted was to be able to perform a ``rally on my position" procedure.
-This was done by an event based approach in which the drone asks the Turtlebot for a point to go to. When the Turtlebot receives this request it broadcasts a new frame on top of it's position (where the drone should be at), and does the appropriate transformations to send the goto command to the drone's autopilot. The drone goes toward this point, and once it perceives the visual pattern it goes on to tracking the pattern, and the Turtlebot stops broadcasting this point.
 
 
-
-\section{Result analysis and conclusions}
-\subsection{Results analysis}
+\section{Experiments and result analysis}
+\subsection{Real life testing}
 \subsubsection{Experiment 1}
 The first test was to tele-operate the drone on top of the turtlebot, and let the on board control
 manage the tracking.
-%need image
-%\centerImage{firstTest.png} 
 
-The drone performing a ``rally on me" operation.
+\begin{figure}[ht!]%
+	\centering
+    \subfloat[]{{\includegraphics[height=3cm]{test1.png}}}  
+    \qquad  
+    \subfloat[]{{\includegraphics[height=3cm]{test2.png} }}  
+    \qquad  
+    \subfloat[]{{\includegraphics[height=3cm]{test3.png}}}       
+    \qquad  
+    \subfloat[]{{\includegraphics[height=3cm]{test4.png}}}       
+    \qquad  
+    \subfloat[]{{\includegraphics[height=3cm]{test5.png}}}  
+    \caption{AR Drone on board tracking}
+    \label{fig:exp1}
+\end{figure}
 
-The test was successful and no trouble arose during this phase. Indeed; tele-operating the drone is 
+The test was successful and no trouble arose during this phase. Indeed, tele-operating the drone is 
 safe since we have total control over it's motion.
+In Figure \ref{fig:exp1} we can see some screen shots of the recorded experiment. In a) the drone takes off, in b) it is teleoperated on top of the Turtlebot, and the tracking starts in c); the Turtlebot stops in d) and the drone lands in e). The tracking is precise enough that it is able to land on the mobile base.
+
 As expected, the on board controller managed to keep the drone stable while still tracking the mobile base 
-movement. However we noted that this controller does not re-center the drone: if the drone has a static
+movement.  However, with further testing we noted that this controller does not re-center the drone: if the drone has a static
 error, the tracker won't compensate it: the drone will remain shifted.
 
 \subsubsection{Experiment 2}
 The second test was to perform the same operation but using the auto-pilot of the \verb!tum_ardrone!
-package for rallying on top of the mobile base.
+package to place the drone on top of the mobile base.
 
-The experiment was not a total success, the auto-pilot rely a lot on the visual camera calibration to 
-localize, and this lead to erratic behaviour and static drifting.
-The autopilot did get the drone on the desired position but then drift away periodically. This lead to the 
-lost of track of the visual feature, leading to the interruption of the tracking.
+\begin{figure}[ht!]%
+	\centering
+    \subfloat[]{{\includegraphics[height=2.8cm]{test2_1.png}}}      
+    \qquad  
+    \subfloat[]{{\includegraphics[height=2.8cm]{test2_22.png}}}       
+    \qquad  
+    \subfloat[]{{\includegraphics[height=2.8cm]{test2_3.png}}}       
+    \qquad  
+    \subfloat[]{{\includegraphics[height=2.8cm]{test2_4.png}}}  
+    \qquad  
+    \subfloat[]{{\includegraphics[height=2.8cm]{test2_5.png}}}  
+    \caption{AR Drone on board tracking}
+    \label{fig:exp2}
+\end{figure}
+
+
+
+The experiment was not a total success, the auto-pilot relies a lot on the visual camera calibration to 
+localize (having enough keypoint at take off), and this lead to erratic behaviour and static drifting.
+In Figure \ref{fig:exp2} we showcase one of the experiments. In a) the drone takes off, in b) the drone gets to the desired position [0.5,0,0.7]. There is drifting and in c) the drone starts tracking the Turtlebot. The tracking finishes in d) and the drone lands on e). In this experiment the autopilot did get the drone on the desired position but then drifted away. 
+
 
 We re-tried performing the experiment and again, the same stability issues happened. After a few tests we 
-saw very different behaviours: sometime the auto-pilot would manage perfectly to go to position without any
-drifting and sometime the drone would drift away dramatically. In order to minimize this problem, we 
+saw very different behaviours: sometimes the auto-pilot would manage perfectly to go to position without any
+drifting and sometimes the drone would drift away dramatically. In order to minimize this problem, we 
 automated the take off procedure to have the best possible camera calibration during take-off. This 
-allowed to reduce the erratic behaviour but didn't entirety solved the problem: erratic behaviour can happen
+allowed to reduce the erratic behaviour but didn't entirely solved the problem: erratic behaviour can happen
 especially of the front camera does not find enough visual keypoints.
 
+\subsection{Simulation testing}
 \subsubsection{Experiment 3}
-In order to verify the ``rally on me" procedure, we implemented this setup into Gazebo simulator to test if
-the position of the frames were correct and if the call to the frame transformation service was working.
+In order to verify the tracking on the coupled mode, we implemented this set up in the Gazebo simulator. 
+In the simulation the odometry frame of the robots begin where the robots appear, we set the Turtlebot to begin at [0,0] on the map and the drone at [-1, -1]. Therefore, we can relate both robots position by defining the transformation between them as this fixed distance, with the help of the tf ROS package.
 
-The experiment in Gazebo went flawlessly, the drone stays perfectly stable and the frame attached to the 
-mobile base is always align.
+Since we know the position of both robots in the simulated world, we were able to graph the position error in Figure \ref{fig:exp3}, the tracking mode is in light blue (1 is visual tracking and -1 position tracking); the error in x is in red and the error in y is in dark blue. 
+
+At 58s the coupled mode is activated, we can see the drone has the Turtlebot on its line of sight and it reaches it very quickly. There is some oscillation while the drone tries to center the Turtlebot on the camera view and overshoots. At 70s the Turtlebot is given [3,3] as the goal point and at 90s it reaches the goal. From the error plot we can conclude the drone never lost sight of the Turtlebot during this trajectory,  and the error was kept under 0.8m.  Screen shots of the simulation can be seen in \ref{fig:exp3a}.
+
+There are other goal points, but now we will focus on the final portion of the test. At 140s the Turtlebot is at [3,3], the drone is visual tracking mode, and we give the goal [0,0]. At 145s the drone hits an obstacle and cannot follow the Turtlebot further, it looses sight at 147s, and changes to position tracking control. The Turtlebot reaches the goal at 160s, and the drone gets there at 178s. Screen shots of the simulation can be seen in \ref{fig:exp3b}.
+
+With this experiment we prove that the coupled mode behaviour works as intended. In fact the color blob tracking is very reliable, the drone had to bump into obstacles to loose track of the Turtlebot. 
+The difference in tracking speed is significant, since the visual tracking tries to follow the Turtlebot very closely, but the position tracking is very slow. 
+
+\begin{figure}[ht]	
+\centering
+\includegraphics[height=7cm]{error1video.png}
+\caption{Position error on coupled mode}
+\label{fig:exp3}
+\end{figure}
+
+\begin{figure}[ht]%
+	\centering
+    \subfloat[58s]{{\includegraphics[height=2.8cm]{exp3_1.png}}}      
+    \qquad  
+    \subfloat[65s]{{\includegraphics[height=2.8cm]{exp3_2.png}}}       
+    \qquad  
+    \subfloat[75s]{{\includegraphics[height=2.8cm]{exp3_3.png}}}       
+    \qquad  
+    \subfloat[85s]{{\includegraphics[height=2.8cm]{exp3_4.png}}}  
+    \qquad  
+    \subfloat[90s]{{\includegraphics[height=2.8cm]{exp3_5.png}}}  
+    \caption{Color blob tracking}
+    \label{fig:exp3a}
+\end{figure}
+
+\begin{figure}[ht]%
+	\centering
+    \subfloat[140s]{{\includegraphics[height=2.8cm]{exp3_6.png}}}      
+    \qquad  
+    \subfloat[145s]{{\includegraphics[height=2.8cm]{exp3_7.png}}}       
+    \qquad  
+    \subfloat[147s]{{\includegraphics[height=2.8cm]{exp3_8.png}}}       
+    \qquad  
+    \subfloat[160s]{{\includegraphics[height=2.8cm]{exp3_9.png}}}  
+    \qquad  
+    \subfloat[178s]{{\includegraphics[height=2.8cm]{exp3_10.png}}}  
+    \caption{Position tracking}
+    \label{fig:exp3b}
+\end{figure}
+
+
 
 \subsection{Improvement and future work}
 \subsubsection{Graphical user interface}
@@ -383,7 +531,7 @@ effective
 one.
 
 \subsubsection{Simulation}
-As the simulator doesn't reproduce accurately the physical behaviour of the drone, having a 
+As the simulator does not reproduce accurately the physical behaviour of the drone, having a 
 more detailed AR Drone model would help to test stability and control issues, without having 
 to use the real physical system.
 
